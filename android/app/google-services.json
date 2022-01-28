@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "706334805907",
+    "project_id": "e-talase",
+    "storage_bucket": "e-talase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706334805907:android:5f4334b0bbb4168eed2266",
+        "android_client_info": {
+          "package_name": "com.appdila"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706334805907-ba4puu9eamk06ucl8iv4h9rbk7v2icju.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC38vI6sxvRXlQnWWfvcrz63uAr8HbOLds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706334805907-ba4puu9eamk06ucl8iv4h9rbk7v2icju.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

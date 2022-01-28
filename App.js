@@ -1,49 +1,102 @@
-import * as React from 'react';
-import { Text, StatusBar, View } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { Text, StatusBar, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { List } from 'react-native-paper';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Logo from "./src/images/loading.svg";
-function HomeScreen() {
-  const [expanded, setExpanded] = React.useState(true);
+import color from './src/style/colors'
 
-  const handlePress = () => setExpanded(!expanded);
+import Home from './src/screens/Home';
+import Katalog from './src/screens/Katalog';
+import Settings from './src/screens/Settings';
+import Detail from './src/screens/Katalog/detail';
+import Produk from './src/screens/Produk';
+import Kategori from './src/screens/Kategori';
+import addProduk from './src/screens/Produk/add';
+import addKategori from './src/screens/Kategori/add';
+// import User from './src/screens/User';
 
-  return (
-    <>
-    <Logo />
-    <Ionicons name="ios-list" size={50} color="#000" />
-    <List.Section title="Accordions">
-      <List.Accordion
-        title="Uncontrolled Accordion"
-        left={props => <List.Icon {...props} icon="folder" />}>
-        <List.Item title="First item" />
-        <List.Item title="Second item" />
-      </List.Accordion>
+const MainApp = ({navigation}) => {
+  const [initializing, setInitializing] = useState(true);
+  const [loading, setLoading] = useState(false);
+  
 
-      <List.Accordion
-        title="Controlled Accordion"
-        left={props => <List.Icon {...props} icon="folder" />}
-        expanded={expanded}
-        onPress={handlePress}>
-        <List.Item title="First item" />
-        <List.Item title="Second item" />
-      </List.Accordion>
-    </List.Section>
-    </>
-  );
+
+  if (loading) {
+    // navigation.replace('authLogin')
+    return (
+        <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+        <StatusBar
+          barStyle="dark-content"
+          animated={true}
+          backgroundColor="#4DD4B2"
+          // translucent backgroundColor="transparent"
+        />
+        <ActivityIndicator color='#2DDA93' size="small" />
+      </View>
+    )
+  }else{
+    return (
+      <Tab.Navigator
+            screenOptions={({ route }) => ({
+            
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName;
+  
+              if (route.name === 'Home') {
+                iconName = focused
+                  ? 'ios-home'
+                  : 'ios-home-outline';
+              } else if (route.name === 'Katalog') {
+                iconName = focused ? 'apps' : 'apps-outline';
+              } else if (route.name === 'Settings') {
+                iconName = focused ? 'ios-person' : 'ios-person-outline';
+              }
+  
+              // You can return any component that you like here!
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+            tabBarStyle: { 
+              position: 'absolute', 
+              bottom:25 , 
+              left:20, 
+              paddingBottom:5,
+              right:20, 
+              elevation:0, 
+              backgroundColor:'#FFFFFF', 
+              borderRadius:15,
+              borderTopColor: "#fff",
+              // padding:5, 
+              hight:90, 
+              ...styles.shadow
+            },
+            tabBarActiveTintColor: color.primary,
+            tabBarInactiveTintColor: 'gray',
+            
+          })}
+        >
+          <Tab.Screen name="Home" component={Home} 
+            options={{ headerShown: false,}}/>
+          <Tab.Screen name="Katalog" component={Katalog} 
+            options={{ 
+              headerShown: false,
+            }}/>
+          <Tab.Screen name="Settings" component={Settings} 
+          options={{ 
+            headerShown: false,
+          }}/>
+        </Tab.Navigator>
+    );
+  }
+
+  
+  
 }
 
-function SettingsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
-    </View>
-  );
-}
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
 
 export default function App() {
   return (
@@ -54,12 +107,39 @@ export default function App() {
           // backgroundColor="#4DD4B2"
           translucent backgroundColor="transparent"
         />
-      <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} options={{ 
+        <Stack.Navigator initialRouteName="Splash">
+          <Stack.Screen name="MainApp" component={MainApp} options={{ 
               headerShown : false
-          }}/>
-      </Tab.Navigator>
+          }} />
+          <Stack.Screen name="Detail" component={Detail} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="Produk" component={Produk} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="Kategori" component={Kategori} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="addProduk" component={addProduk} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="addKategori" component={addKategori} options={{ 
+              headerShown : false
+          }} />
+        </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  shadow: {
+    shadowColor: color.primary,
+    shadowOffset: {
+      width:0,
+      height:10,
+    },
+    shadowOpacity:0.25,
+    shadowRadius: 3.5,
+    elevation:5,
+  },
+});
