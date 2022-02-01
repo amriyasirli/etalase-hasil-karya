@@ -1,76 +1,75 @@
-import React from 'react';
-import {StyleSheet, Text, View, ScrollView, Dimensions, FlatList} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View, ScrollView, RefreshControl, FlatList} from 'react-native';
 import { Card, Searchbar, IconButton, Caption } from 'react-native-paper';
 import {Row, Col} from 'react-native-responsive-grid-system';
 import Metrics from '../../style/metrics'
 import color from '../../style/colors'
+import Loading from '../../component/loading'
+import Empty from '../../component/dataEmpty'
+import firestore from '@react-native-firebase/firestore';
+
 
 const Katalog = ({navigation}) => {
-    const [searchQuery, setSearchQuery] = React.useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [produk, setProduk] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [msgNull, setMsgnull] = useState(false);
+
+    const empty = arr => (arr.length = 0);
+    const onRefresh = () => {
+        // console.log('test')
+        // setIsLoading(true);
+        // setMsgnull(false);
+        // empty(produk);
+        setProduk([]);
+        setTimeout(() => {
+            loadData();
+        }, 1000);
+    };
+
+    useEffect(() => {
+        loadData()
+    }, [])
+
+    const loadData = () => {
+        firestore()
+            .collection('Produk')
+            .orderBy('tanggal', 'desc')
+            .get()
+            .then(querySnapshot => {
+                querySnapshot.forEach(documentSnapshot => {
+                setProduk(data => [...data, documentSnapshot.data()]);
+                // setIsLoading(false);
+                });
+                if (produk.length > 0) {
+                setIsLoading(false);
+                setMsgnull(false);
+                } else {
+                setMsgnull(true);
+                setIsLoading(false);
+                }
+                
+            });
+    }
 
     const onChangeSearch = query => setSearchQuery(query);
-    const dataEntry = [
-        {
-            title: 'Beautiful and dramatic Antelope Canyon',
-            subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
-            illustration: 'https://i.imgur.com/UYiroysl.jpg'
-        },
-        {
-            title: 'Earlier this morning, NYC',
-            subtitle: 'Lorem ipsum dolor sit amet',
-            illustration: 'https://i.imgur.com/UPrs1EWl.jpg'
-        },
-        {
-            title: 'White Pocket Sunset',
-            subtitle: 'Lorem ipsum dolor sit amet et nuncat ',
-            illustration: 'https://i.imgur.com/MABUbpDl.jpg'
-        },
-        {
-            title: 'Acrocorinth, Greece',
-            subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
-            illustration: 'https://i.imgur.com/KZsmUi2l.jpg'
-        },
-        {
-            title: 'The lone tree, majestic landscape of New Zealand',
-            subtitle: 'Lorem ipsum dolor sit amet',
-            illustration: 'https://i.imgur.com/2nCt3Sbl.jpg'
-        },
-        {
-            title: 'Middle Earth, Germany',
-            subtitle: 'Lorem ipsum dolor sit amet',
-            illustration: 'https://i.imgur.com/lceHsT6l.jpg'
-        },
-        {
-            title: 'Acrocorinth, Greece',
-            subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
-            illustration: 'https://i.imgur.com/KZsmUi2l.jpg'
-        },
-        {
-            title: 'The lone tree, majestic landscape of New Zealand',
-            subtitle: 'Lorem ipsum dolor sit amet',
-            illustration: 'https://i.imgur.com/2nCt3Sbl.jpg'
-        },
-        {
-            title: 'Middle Earth, Germany',
-            subtitle: 'Lorem ipsum dolor sit amet',
-            illustration: 'https://i.imgur.com/lceHsT6l.jpg'
-        }
-    ];
-    const renderItem = (index, i) => {
+    const renderItem = ({item}) => {
         return(
-            <Card style={styles.items} key={i}>
-                <Card.Cover key={index} source={{ uri: 'https://picsum.photos/700' }} style={{height:156}} />
+            <Card style={styles.items}>
+                <Card.Cover source={{ uri: 'https://picsum.photos/700' }} style={{height:156}} />
                 <IconButton onPress={()=>{}} icon="heart-outline" color={color.primary} style={styles.iconHeart} />
-                <Caption style={styles.produkName}>Nama Karya Produk</Caption>
+                <Caption style={styles.produkName}>{item.namaProduk}</Caption>
                 <View style={styles.containerPrice}>
-                    <Caption style={styles.price}>Rp. 5000</Caption>
-                    <IconButton icon="chevron-right" size={20} color={color.primary} style={{backgroundColor:color.lightPrimary}}  onPress={()=>navigation.navigate('Detail')} />
+                    <Caption style={styles.price}>{item.kategori}</Caption>
+                    <IconButton icon="chevron-right" size={20} color={color.primary} style={{backgroundColor:color.lightPrimary}}  onPress={()=>navigation.navigate('Detail', {id:item.id})} />
                 </View>
             </Card>
         )
     }
+    if(isLoading) return <Loading />
+    // if(msgNull == false) return <Empty />
   return (
-      <>
+    <>
         <Searchbar
             placeholder="Search"
             onChangeText={onChangeSearch}
@@ -79,31 +78,50 @@ const Katalog = ({navigation}) => {
             selectionColor={color.textPrimary}
             inputStyle={{fontSize:14, fontFamily:'Poppins-Regular'}}
             />
+        {msgNull ? (
+            <View
+                style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                }}>
+                <Text
+                style={{
+                    fontSize: 14,
+                    fontFamily: 'Poppins-Bold',
+                    color:color.primary
+                }}>
+                Tidak ada data !
+                </Text>
+                <IconButton
+                style={{
+                    elevation: 15,
+                    shadowColor: '#36455A',
+                    backgroundColor: '#36455A',
+                    marginTop: 30,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+                size={28}
+                color="white"
+                icon="refresh"
+                onPress={onRefresh}
+                />
+            </View>
+        ):(
             <FlatList 
-                data={dataEntry}
+                data={produk}
+                keyExtractor={(produk, index) => index.toString()}
                 numColumns={2}
                 renderItem={renderItem}
                 contentContainerStyle={{paddingHorizontal:10}}
+                refreshControl={
+                    <RefreshControl refreshing={isLoading} onRefresh={()=>onRefresh()} />
+                  }
                 ListFooterComponent={()=>{return(<View style={{height:100}}></View>)}}
             />
 
-        {/* <ScrollView style={{marginTop:10}}>
-            <View style={styles.container}>
-                    {dataEntry.map((index, i)=>{
-                        return(
-                            <Card style={styles.items} key={i}>
-                                <Card.Cover key={index} source={{ uri: 'https://picsum.photos/700' }} style={{height:156}} />
-                                <IconButton onPress={()=>{}} icon="heart-outline" color={color.primary} style={styles.iconHeart} />
-                                <Caption style={styles.produkName}>Nama Karya Produk</Caption>
-                                <View style={styles.containerPrice}>
-                                    <Caption style={styles.price}>Rp. 5000</Caption>
-                                    <IconButton icon="plus" color={color.primary} onPress={()=>{}} />
-                                </View>
-                            </Card>
-                        )
-                    })}
-            </View>
-        </ScrollView> */}
+        )}
     </>
   );
 };

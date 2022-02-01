@@ -26,27 +26,21 @@ import font from '../../style/font';
 import DatePicker from 'react-native-date-picker';
 import dataEntry from '../../service/dataEntri'
 import firestore from '@react-native-firebase/firestore';
-import uuid from 'react-native-uuid';
-
 
 
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const addKategori = ({navigation}) => {
-  const [kategori, setKategori] = useState("");
-  const [btnLoading, setbtnLoading] = useState(false);
+const updateKategori = ({route, navigation}) => {
+    const {id, value} = route.params;
+    const [kategori, setKategori] = useState(value);
 
-  const addKategori = () => {
-    setbtnLoading(true);
-
-    const id = uuid.v4();
+  const update = () => {
     firestore()
       .collection('Kategori')
       .doc(id)
-      .set({
-          id:id,
+      .update({
           kategori: kategori,
       })
       .then(() => {
@@ -99,7 +93,7 @@ const addKategori = ({navigation}) => {
         </View>
     </ScrollView>
     <View style={{width:width, padding:20}} >
-      <Button uppercase={false} color={color.primary} mode="contained" disabled={btnLoading} labelStyle={styles.button} onPress={() => addKategori()}>
+      <Button uppercase={false} color={color.primary} mode="contained" labelStyle={styles.button} onPress={() => update()}>
           Simpan
       </Button>
     </View>
@@ -107,7 +101,7 @@ const addKategori = ({navigation}) => {
   );
 };
 
-export default addKategori;
+export default updateKategori;
 
 const styles = StyleSheet.create({
   container: {

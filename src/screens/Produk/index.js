@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView,
-  TouchableOpacity,
+  RefreshControl,
   Dimensions,
   FlatList,
+  Alert,
+  ToastAndroid
 } from 'react-native';
 import {
   IconButton,
@@ -14,10 +15,8 @@ import {
   Text,
   Caption,
   Subheading,
-  Card,
   Button,
   List,
-  Alert,
   Menu, Divider, Provider,
   FAB,
 } from 'react-native-paper';
@@ -26,25 +25,77 @@ import color from '../../style/colors';
 import font from '../../style/font';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import dataEntry from '../../service/dataEntri'
+import firestore from '@react-native-firebase/firestore';
+import Loading from '../../component/loading'
 
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
 const Produk = ({navigation}) => {
-  const [visible, setVisible] = React.useState(false);
+  const [produk, setProduk] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [msgNull, setMsgnull] = useState(false);
+
 
   const openMenu = () => setVisible(true);
-
   const closeMenu = () => setVisible(false);
 
-  const renderItem = (index) => {
+  const empty = arr => (arr.length = 0);
+  const onRefresh = () => {
+    setIsLoading(true)
+    empty(produk);
+    setTimeout(() => {
+      loadData();
+    }, 1000);
+  };
+
+  useEffect(() => {
+    loadData()
+  }, []);
+
+  const loadData = () => {
+    firestore()
+      .collection('Produk')
+      .orderBy('tanggal', 'desc')
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(documentSnapshot => {
+          setProduk(data => [...data, documentSnapshot.data()]);
+          // setIsLoading(false);
+
+          // setFilteredDataSource(masterDataSource);
+          // setLoading(false)
+        });
+        if (produk.length > 0) {
+          setIsLoading(false);
+          setMsgnull(false);
+        } else {
+          setMsgnull(true);
+          setIsLoading(false);
+        }
+        
+      });
+  }
+  
+  const hapus = (id) => {
+    firestore()
+      .collection('Produk')
+      .doc(id)
+      .delete()
+      .then(() => {
+        ToastAndroid.show('Data dihapus, tarik kebawah untuk refresh !', 2000);
+      });
+  }
+
+  const renderItem = ({item}) => {
     return(
       <>
       <List.Accordion
-          key={index}
-          title="Produk"
-          description="deskripsi produk"
+          // key={index}
+          title={item.namaProduk}
+          description={item.kategori}
           titleStyle={styles.titleList}
           onPress={openMenu}
           left={() => <List.Icon color={color.textSecondary} icon="apps-box" />}
@@ -71,6 +122,7 @@ const Produk = ({navigation}) => {
                 [
                   {
                     text: 'Ya',
+                    onPress:()=>hapus(item.id)
                   },
                   {text: 'Cancel', style: 'cancel'},
                 ],
@@ -85,6 +137,15 @@ const Produk = ({navigation}) => {
             labelStyle={{color: color.success, fontSize: 12}}
             icon="file-document-edit-outline"
             mode="outlined"
+            onPress={() => navigation.navigate('updateProduk', {
+              route_id:item.id,
+              route_namaProduk:item.namaProduk,
+              route_kategori:item.kategori,
+              route_tanggal:item.tanggal,
+              route_creator:item.creator,
+              route_wa:item.wa,
+              route_deskripsi:item.deskripsi,
+            })}
             size={15}>
             Update
           </Button>
@@ -93,6 +154,7 @@ const Produk = ({navigation}) => {
             labelStyle={{color: color.textPrimary, fontSize: 12}}
             icon="eye"
             mode="outlined"
+            onPress={()=>navigation.navigate('Detail', {id:item.id})}
             size={15}>
             Detail
           </Button>
@@ -101,6 +163,8 @@ const Produk = ({navigation}) => {
 </>
     )
   }
+
+  if (isLoading) return <Loading />
   return (
       <>
         <View>
@@ -108,13 +172,57 @@ const Produk = ({navigation}) => {
             <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} color={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
             <Subheading style={styles.title}>List Produk</Subheading>
           </View>
-          <List.Section>
+          
             {/* <List.Subheader style={{fontFamily:'Poppins-SemiBold'}}>Menu</List.Subheader> */}
-            <FlatList 
-              data={dataEntry}
-              renderItem={renderItem}
+            {!msgNull ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              paddingTop: 68,
+              alignItems: 'center',
+            }}>
+            <Text
+              style={{
+                marginTop: height/3,
+                fontSize: 14,
+                fontFamily: 'Poppins-Bold',
+                color:color.primary
+              }}>
+              Tidak ada riwayat !
+            </Text>
+            <IconButton
+              style={{
+                elevation: 15,
+                shadowColor: '#36455A',
+                backgroundColor: '#36455A',
+                marginTop: 30,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              size={28}
+              color="white"
+              icon="refresh"
+              onPress={onRefresh}
             />
-          </List.Section>
+          </View>
+        ):(
+          <List.Section style={{marginBottom:20}}>
+            <FlatList 
+              data={produk}
+              keyExtractor={(produk, index) => index.toString()}
+              renderItem={renderItem}
+              ListFooterComponent={(<View style={{height:300}}></View>)}
+              refreshControl={
+                <RefreshControl refreshing={isLoading} onRefresh={()=>onRefresh()} />
+              }
+            />
+            </List.Section>
+            )}
+          
+            {/* <View style={{height:100}}>
+              <Text>sys</Text>
+            </View> */}
         </View>
         <FAB
           style={styles.fab}
@@ -136,6 +244,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     paddingTop: height / 10,
+  },
+  loadingContainer:{
+    flex:1,
+    justifyContent:'center', 
+    alignItems:'center'
   },
   title: {
     color: color.textWhite,

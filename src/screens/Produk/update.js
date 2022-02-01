@@ -36,20 +36,31 @@ import Loading from '../../component/loading'
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const addProduk = ({navigation}) => {
-  const [namaProduk, setNamaProduk] = useState("");
-  const [kategori, setKategori] = useState("Pilih Kategori");
-  const [tanggal, setTanggal] = useState(new Date());
-  const [creator, setCreator] = useState("");
-  const [wa, setWa] = useState("62");
-  const [deskripsi, setDeskripsi] = useState("");
+const updateProduk = ({route, navigation}) => {
+  const {
+    route_id,
+    route_namaProduk,
+    route_kategori,
+    route_tanggal,
+    route_creator,
+    route_wa,
+    route_deskripsi
+  } = route.params;
+
+  const [namaProduk, setNamaProduk] = useState(route_namaProduk);
+  const [kategori, setKategori] = useState(route_kategori);
+  const [tanggal, setTanggal] = useState(route_tanggal);
+  const [creator, setCreator] = useState(route_creator);
+  const [wa, setWa] = useState(route_wa);
+  const [deskripsi, setDeskripsi] = useState(route_deskripsi);
   const [visible, setVisible] = useState(false);
   const [modalDate, setModalDate] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [btnLoading, setbtnLoading] = useState(false);
 
   const [dataKategori, setDataKategori] = useState([]);
+
+  
 
   const showModal = () => setVisible(true);
   const showModalDate = () => setModalDate(true);
@@ -75,14 +86,12 @@ const addProduk = ({navigation}) => {
       });
   }
 
-  const addProduk = () => {
-    setbtnLoading(true);
-    const id = uuid.v4();
+  const updateProduk = () => {
+    
     firestore()
       .collection('Produk')
-      .doc(id)
-      .set({
-          id:id,
+      .doc(route_id)
+      .update({
           namaProduk: namaProduk,
           kategori: kategori,
           tanggal: tanggal,
@@ -91,7 +100,7 @@ const addProduk = ({navigation}) => {
           deskripsi: deskripsi,
       })
       .then(() => {
-          ToastAndroid.show('Data disimpan, tarik kebawah untuk refresh !', 2000);
+          ToastAndroid.show('Data diupdate, tarik kebawah untuk refresh !', 2000);
           setTimeout(() => {
             navigation.navigate('Produk');
           }, 1000);
@@ -155,11 +164,11 @@ const addProduk = ({navigation}) => {
               <TextInput
                 label="Tanggal"
                 value={
-                  tanggal.getDate() +
+                  new Date(tanggal.toMillis()).getDate() +
                   '/' +
-                  (tanggal.getMonth() + 1) +
+                  (new Date(tanggal.toMillis()).getMonth() + 1) +
                   '/' +
-                  tanggal.getFullYear()
+                  new Date(tanggal.toMillis()).getFullYear()
                 }
                 disabled={true}
                 mode="outlined"
@@ -187,8 +196,8 @@ const addProduk = ({navigation}) => {
               label="Nomor Whatsapp"
               value={wa}
               mode="outlined"
-              style={styles.input}
               keyboardType="numeric"
+              style={styles.input}
               theme={{
                 colors: {primary: color.textLight, underlineColor: 'transparent'},
               }}
@@ -223,8 +232,8 @@ const addProduk = ({navigation}) => {
             <List.Subheader style={{fontFamily:'Poppins-SemiBold', color:color.textPrimary}}>Atur Tanggal</List.Subheader>
             <DatePicker
               mode={'date'}
-              date={tanggal}
-              value={tanggal}
+              date={new Date(tanggal.toMillis())}
+              value={new Date(tanggal.toMillis())}
               onDateChange={date => {
                 setTanggal(date);
               }}
@@ -233,7 +242,7 @@ const addProduk = ({navigation}) => {
         </Portal>
     </ScrollView>
     <View style={{width:width, padding:20}} >
-      <Button uppercase={false} color={color.primary} mode="contained" labelStyle={styles.button} disabled={btnLoading} onPress={() => addProduk()}>
+      <Button uppercase={false} color={color.primary} mode="contained" labelStyle={styles.button} onPress={() => updateProduk()}>
           Simpan
       </Button>
     </View>
@@ -241,7 +250,7 @@ const addProduk = ({navigation}) => {
   );
 };
 
-export default addProduk;
+export default updateProduk;
 
 const styles = StyleSheet.create({
   container: {

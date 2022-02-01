@@ -45,7 +45,7 @@ const Settings = ({navigation}) => {
           onPress={() => navigation.navigate('Kategori')}
           left={() => <List.Icon color={color.textSecondary} icon="tag-outline" />}
         />
-        <List.Item
+        {/* <List.Item
           title="User Management"
           titleStyle={styles.titleList}
           onPress={() => navigation.navigate('User')}
@@ -56,7 +56,7 @@ const Settings = ({navigation}) => {
           titleStyle={styles.titleList}
           onPress={() => navigation.navigate('Settings')}
           left={() => <List.Icon color={color.textSecondary} icon="cogs" />}
-        />
+        /> */}
         <List.Item
           title="Logout"
           titleStyle={styles.titleList}

@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import color from './src/style/colors'
 
+import Splash from './src/screens/Splash';
 import Home from './src/screens/Home';
 import Katalog from './src/screens/Katalog';
 import Settings from './src/screens/Settings';
@@ -13,7 +14,9 @@ import Detail from './src/screens/Katalog/detail';
 import Produk from './src/screens/Produk';
 import Kategori from './src/screens/Kategori';
 import addProduk from './src/screens/Produk/add';
+import updateProduk from './src/screens/Produk/update';
 import addKategori from './src/screens/Kategori/add';
+import updateKategori from './src/screens/Kategori/update';
 // import User from './src/screens/User';
 
 const MainApp = ({navigation}) => {
@@ -49,7 +52,7 @@ const MainApp = ({navigation}) => {
                   : 'ios-home-outline';
               } else if (route.name === 'Katalog') {
                 iconName = focused ? 'apps' : 'apps-outline';
-              } else if (route.name === 'Settings') {
+              } else if (route.name === 'Saya') {
                 iconName = focused ? 'ios-person' : 'ios-person-outline';
               }
   
@@ -58,13 +61,13 @@ const MainApp = ({navigation}) => {
             },
             tabBarStyle: { 
               position: 'absolute', 
-              bottom:25 , 
-              left:20, 
+              // bottom:25 , 
+              // left:20, 
               paddingBottom:5,
-              right:20, 
+              // right:20, 
               elevation:0, 
               backgroundColor:'#FFFFFF', 
-              borderRadius:15,
+              // borderRadius:15,
               borderTopColor: "#fff",
               // padding:5, 
               hight:90, 
@@ -81,7 +84,7 @@ const MainApp = ({navigation}) => {
             options={{ 
               headerShown: false,
             }}/>
-          <Tab.Screen name="Settings" component={Settings} 
+          <Tab.Screen name="Saya" component={Settings} 
           options={{ 
             headerShown: false,
           }}/>
@@ -108,6 +111,9 @@ export default function App() {
           translucent backgroundColor="transparent"
         />
         <Stack.Navigator initialRouteName="Splash">
+          <Stack.Screen name="Splash" component={Splash} options={{ 
+              headerShown : false
+          }} />
           <Stack.Screen name="MainApp" component={MainApp} options={{ 
               headerShown : false
           }} />
@@ -123,7 +129,13 @@ export default function App() {
           <Stack.Screen name="addProduk" component={addProduk} options={{ 
               headerShown : false
           }} />
+          <Stack.Screen name="updateProduk" component={updateProduk} options={{ 
+              headerShown : false
+          }} />
           <Stack.Screen name="addKategori" component={addKategori} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="updateKategori" component={updateKategori} options={{ 
               headerShown : false
           }} />
         </Stack.Navigator>
