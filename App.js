@@ -50,7 +50,7 @@ const MainApp = ({navigation}) => {
                 iconName = focused
                   ? 'ios-home'
                   : 'ios-home-outline';
-              } else if (route.name === 'Katalog') {
+              } else if (route.name === 'Produk') {
                 iconName = focused ? 'apps' : 'apps-outline';
               } else if (route.name === 'Saya') {
                 iconName = focused ? 'ios-person' : 'ios-person-outline';
@@ -80,7 +80,7 @@ const MainApp = ({navigation}) => {
         >
           <Tab.Screen name="Home" component={Home} 
             options={{ headerShown: false,}}/>
-          <Tab.Screen name="Katalog" component={Katalog} 
+          <Tab.Screen name="Produk" component={Katalog} 
             options={{ 
               headerShown: false,
             }}/>

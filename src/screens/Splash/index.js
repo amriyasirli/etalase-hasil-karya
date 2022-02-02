@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
+import Metrics from '../../style/metrics';
+
 // import Logo from '../../images/logo.png';
 // import auth from '@react-native-firebase/auth';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -72,7 +74,7 @@ const Splash = ({navigation}) => {
           backgroundColor="transparent"
         />
         {/* <View style={styles.background}> */}
-        <Image source={require('../../images/logo-smk.jpeg')} style={styles.logo} />
+        <Image source={require('../../images/logo2.png')} style={styles.logo} />
 
         {/* <Menu2 width={100} height={100} /> */}
         {/* </View> */}
@@ -83,7 +85,7 @@ const Splash = ({navigation}) => {
             marginTop: 20,
             fontFamily: 'Poppins-Medium',
           }}>
-          SMKN 1 Ampek Angkek
+          E-Talase Hasil Karya Siswa
         </Text>
         {/* </ImageBackground> */}
       </View>
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     //   padding:100,
-    width: 180,
-    height: 180,
+    width: Metrics.screenWidth * (240 / 365),
+    height: Metrics.screenHeight * (100 / 365),
   },
 });

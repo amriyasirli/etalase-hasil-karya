@@ -49,7 +49,7 @@ const Home = ({navigation}) => {
   const loadData = () => {
     firestore()
       .collection('Produk')
-      .limit(2)
+      .limit(5)
       .orderBy('tanggal', 'desc')
       .get()
       .then(querySnapshot => {
