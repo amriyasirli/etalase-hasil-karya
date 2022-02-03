@@ -7,7 +7,7 @@ import color from '../../style/colors'
 import Loading from '../../component/loading'
 import Empty from '../../component/dataEmpty'
 import firestore from '@react-native-firebase/firestore';
-
+import storage from '@react-native-firebase/storage';
 
 const Katalog = ({navigation}) => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -15,21 +15,18 @@ const Katalog = ({navigation}) => {
     const [isLoading, setIsLoading] = useState(true);
     const [msgNull, setMsgnull] = useState(false);
 
+
     const empty = arr => (arr.length = 0);
     const onRefresh = () => {
-        // console.log('test')
-        // setIsLoading(true);
-        // setMsgnull(false);
-        // empty(produk);
         setProduk([]);
-        setTimeout(() => {
-            loadData();
-        }, 1000);
+        setIsLoading(true);
+        loadData();
     };
 
     useEffect(() => {
         loadData()
     }, [])
+
 
     const loadData = () => {
         firestore()
@@ -37,26 +34,25 @@ const Katalog = ({navigation}) => {
             .orderBy('tanggal', 'desc')
             .get()
             .then(querySnapshot => {
+                const size = querySnapshot.size;
+                if (size == 0) {
+                    setMsgnull(true);
+                }
                 querySnapshot.forEach(documentSnapshot => {
                 setProduk(data => [...data, documentSnapshot.data()]);
-                // setIsLoading(false);
-                });
-                if (produk.length > 0) {
                 setIsLoading(false);
-                setMsgnull(false);
-                } else {
-                setMsgnull(true);
-                setIsLoading(false);
-                }
+
+            });
                 
             });
     }
 
     const onChangeSearch = query => setSearchQuery(query);
-    const renderItem = ({item}) => {
+    const renderItem = ({item, index}) => {
+        if(isLoading) return <Loading />
         return(
             <Card style={styles.items}>
-                <Card.Cover source={{ uri: 'https://picsum.photos/700' }} style={{height:156}} />
+                <Card.Cover source={{uri:item.uri}} style={{height:156}} />
                 <IconButton onPress={()=>{}} icon="heart-outline" color={color.primary} style={styles.iconHeart} />
                 <Caption style={styles.produkName}>{item.namaProduk}</Caption>
                 <View style={styles.containerPrice}>
@@ -67,7 +63,6 @@ const Katalog = ({navigation}) => {
         )
     }
     if(isLoading) return <Loading />
-    // if(msgNull == false) return <Empty />
   return (
     <>
         <Searchbar
@@ -91,7 +86,7 @@ const Katalog = ({navigation}) => {
                     fontFamily: 'Poppins-Bold',
                     color:color.primary
                 }}>
-                Tidak ada data !
+                Refresh Halaman !
                 </Text>
                 <IconButton
                 style={{

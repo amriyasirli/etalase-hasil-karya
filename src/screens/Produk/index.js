@@ -138,13 +138,7 @@ const Produk = ({navigation}) => {
             icon="file-document-edit-outline"
             mode="outlined"
             onPress={() => navigation.navigate('updateProduk', {
-              route_id:item.id,
-              route_namaProduk:item.namaProduk,
-              route_kategori:item.kategori,
-              route_tanggal:item.tanggal,
-              route_creator:item.creator,
-              route_wa:item.wa,
-              route_deskripsi:item.deskripsi,
+              id:item.id,
             })}
             size={15}>
             Update

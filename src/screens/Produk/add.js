@@ -6,6 +6,8 @@ import {
   ToastAndroid,
   Dimensions,
   FlatList,
+  Alert,
+  Platform,
 } from 'react-native';
 import {
   IconButton,
@@ -19,7 +21,6 @@ import {
   List,
   Modal,
   Menu, Divider, Provider,
-  FAB,
   Portal
 } from 'react-native-paper';
 import Metrics from '../../style/metrics';
@@ -29,12 +30,15 @@ import Carousel, {Pagination} from 'react-native-snap-carousel';
 import DatePicker from 'react-native-date-picker';
 import dataEntry from '../../service/dataEntri'
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import uuid from 'react-native-uuid';
 import Loading from '../../component/loading'
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
+const id = uuid.v4();
 
 const addProduk = ({navigation}) => {
   const [namaProduk, setNamaProduk] = useState("");
@@ -43,6 +47,11 @@ const addProduk = ({navigation}) => {
   const [creator, setCreator] = useState("");
   const [wa, setWa] = useState("62");
   const [deskripsi, setDeskripsi] = useState("");
+
+  const [image, setImage] = useState("");
+  const [uriImage, setUriImage] = useState("");
+  const [upload, setUpload] = useState(false);
+
   const [visible, setVisible] = useState(false);
   const [modalDate, setModalDate] = useState(false);
 
@@ -75,28 +84,106 @@ const addProduk = ({navigation}) => {
       });
   }
 
-  const addProduk = () => {
-    setbtnLoading(true);
-    const id = uuid.v4();
+
+  const addFirestore = (url) => {
     firestore()
-      .collection('Produk')
-      .doc(id)
-      .set({
-          id:id,
-          namaProduk: namaProduk,
-          kategori: kategori,
-          tanggal: tanggal,
-          creator: creator,
-          wa: wa,
-          deskripsi: deskripsi,
-      })
-      .then(() => {
-          ToastAndroid.show('Data disimpan, tarik kebawah untuk refresh !', 2000);
-          setTimeout(() => {
-            navigation.navigate('Produk');
-          }, 1000);
-      });
+        .collection('Produk')
+        .doc(id)
+        .set({
+            id:id,
+            namaProduk: namaProduk,
+            kategori: kategori,
+            tanggal: tanggal,
+            creator: creator,
+            wa: wa,
+            uri: url,
+            deskripsi: deskripsi,
+        })
+        .then(() => {
+            ToastAndroid.show('Data disimpan, tarik kebawah untuk refresh !', 2000);
+            setTimeout(() => {
+              navigation.navigate('Produk');
+            }, 1000);
+        });
   }
+
+  const getlink = (fileName) => {
+    let imageRef = storage().ref('Gambar/'+ id + '/' + fileName);
+      imageRef
+        .getDownloadURL()
+        .then(url => {
+          // setUriImage(url)
+          addFirestore(url)
+        })
+        .catch(e => console.log('getting downloadURL of image error => ', e));
+  }
+
+  const addProduk = async () => {
+    if(image == ""){
+      ToastAndroid.show('Masukkan gambar!', 2000);
+    }
+    else{
+      setbtnLoading(true);
+      uploadImage();
+      
+    }
+  }
+
+  const uploadImage = () => {
+    const uri = image;
+        //------- upload gambar -------//
+        const filename = uri.substring(uri.lastIndexOf('/') + 1);
+        const uploadUri =
+          Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+        const task = storage()
+          .ref('Gambar/' + id + '/')
+          .child(filename)
+          .putFile(uploadUri);
+        // set progress state
+        task.on('state_changed', snapshot => {
+          ToastAndroid.show('Harap tunggu!', 1000);
+          getlink(filename)
+        });
+  };
+
+  const setUri = async (id, image) => {
+    let imageRef = storage().ref('Gambar/' + id + '/' + image);
+    await imageRef
+    .getDownloadURL()
+    .then(url => {
+        //from url you can fetched the uploaded image easily
+        setUriImage(url);
+    })
+    .catch(e => console.log('getting downloadURL of image error => ', e));
+  }
+
+  const openGallery = () => {
+    const options = {
+      quality: 1,
+      selectionLimit: 1,
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        Alert.alert('Warning!', 'Ambil foto dari galeri atau kameramu');
+      } else if (response.error) {
+        Alert.alert('Warning!', 'Terjadi kesalahan !');
+      } else if (response.customButton) {
+        Alert.alert(
+          'Warning!',
+          'User tapped custom button: ',
+          response.customButton,
+        );
+      } else {
+        setImage(response.assets[0].uri);
+        setUpload(true)
+        // console.log(arrayImages[0]);
+      }
+    });
+  };
 
   const renderItem = ({item}) => {
     return(
@@ -206,6 +293,28 @@ const addProduk = ({navigation}) => {
               numberOfLines={6}
               onChangeText={text => setDeskripsi(text)}
             />
+            {!upload ? (
+              <View style={styles.containerCamera}>
+                <IconButton 
+                  icon="image-plus"
+                  size={38}
+                  onPress={()=> openGallery()}
+                  color={color.primary}
+                  style={{backgroundColor:color.lightPrimary}}
+                />
+                <Subheading>Upload Gambar</Subheading>
+              </View>
+            ):(
+              <>
+              <Subheading style={{marginHorizontal:width*(30/365), marginTop:height*(5/365), fontFamily:'Poppins-Medium', color:color.textSecondary}}>Foto Produk</Subheading>
+              <Card style={styles.imageCard}>
+                <Card.Cover
+                  source={{uri: image}}
+                  style={{height: height*(100/365)}}
+                />
+              </Card>
+              </>
+            )}
           </List.Section>
         </View>
         <Portal>
@@ -237,7 +346,7 @@ const addProduk = ({navigation}) => {
           Simpan
       </Button>
     </View>
-</Provider>
+  </Provider>
   );
 };
 
@@ -256,6 +365,11 @@ const styles = StyleSheet.create({
     padding: 20,
     margin:30,
     borderRadius:6
+  },
+  containerCamera:{
+    justifyContent:'center',
+    alignItems:'center',
+    paddingVertical:10
   },
   title: {
     color: color.textWhite,
@@ -289,5 +403,10 @@ const styles = StyleSheet.create({
     color:color.textWhite,
     fontFamily:'Poppins-Medium',
     fontSize:font.size.font10,
+  }, 
+  imageCard:{
+    marginHorizontal:width/15,
+    elevation:12,
+    shadowColor:color.textPrimary,
   }
 });

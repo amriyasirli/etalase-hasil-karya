@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react'
 import { StyleSheet, Image, Text, View, ScrollView, Linking } from 'react-native'
-import {Avatar, Headline, IconButton, Subheading, Button, Caption} from 'react-native-paper'
+import {Avatar, Headline, IconButton, Subheading, Button, Caption, Card} from 'react-native-paper'
 import color from '../../style/colors'
 import Metrics from '../../style/metrics'
 import font from '../../style/font'
 import Loading from '../../component/loading'
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const width = Metrics.screenWidth; 
 const height = Metrics.screenHeight; 
@@ -18,17 +19,22 @@ const detail = ({route, navigation}) => {
     const [creator, setCreator] = useState("");
     const [wa, setWa] = useState("");
     const [deskripsi, setDeskripsi] = useState("");
+    const [uri, setUri] = useState("");
     const [tanggal, setTanggal] = useState("");
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        loadData();
+    }, [])
+
+    const loadData = () => {
         console.log(id);
         firestore()
             .collection('Produk')
             .where('id', '==', id)
             .get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(documentSnapshot => {
+            .then( querySnapshot => {
+                querySnapshot.forEach(async documentSnapshot => {
                 // setProduk(data => [...data, documentSnapshot.data()]);
                 const docData = {...documentSnapshot.data()};
                 setNamaProduk(docData.namaProduk);
@@ -37,11 +43,27 @@ const detail = ({route, navigation}) => {
                 setWa(docData.wa);
                 setDeskripsi(docData.deskripsi);
                 setTanggal(docData.tanggal);
+                setUri(docData.uri);
+                // await loadImage(id, docData.image);
                 setIsLoading(false);
+
 
                 });
             });
-    }, [])
+    }
+
+    const loadImage = async (id, image) => {
+
+        let imageRef = storage().ref('Gambar/' + id + '/' + image);
+        await imageRef
+        .getDownloadURL()
+        .then(url => {
+            //from url you can fetched the uploaded image easily
+            setImage(url);
+        })
+        .catch(e => console.log('getting downloadURL of image error => ', e));
+      
+      };
 
     if(isLoading) return <Loading />
 
@@ -50,7 +72,7 @@ const detail = ({route, navigation}) => {
         <ScrollView style={{backgroundColor:'#FFF'}}>
             <View style={styles.containerHeader}>
                 <IconButton icon="arrow-left" size={32} color={color.textWhite} style={{position:'absolute', left:10, top:60}} onPress={()=>navigation.goBack()} />
-                <Avatar.Image size={176} style={styles.produk} source={require('../../images/produk.png')} />
+                <Avatar.Image size={280} style={styles.produk} source={{uri:uri}} />
             </View>
             <View style={styles.containerBody}>
                 <Headline style={styles.produkName}>{namaProduk}</Headline>

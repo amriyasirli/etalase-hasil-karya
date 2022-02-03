@@ -129,7 +129,7 @@ const updateProduk = ({route, navigation}) => {
         <View>
           <View style={styles.container}>
             <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} color={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
-            <Subheading style={styles.title}>Tambah Produk</Subheading>
+            <Subheading style={styles.title}>Update Produk</Subheading>
           </View>
           <List.Section>
             <TextInput

@@ -7,6 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import color from './src/style/colors'
 
 import Splash from './src/screens/Splash';
+import Login from './src/screens/Auth/login';
 import Home from './src/screens/Home';
 import Katalog from './src/screens/Katalog';
 import Settings from './src/screens/Settings';
@@ -50,7 +51,7 @@ const MainApp = ({navigation}) => {
                 iconName = focused
                   ? 'ios-home'
                   : 'ios-home-outline';
-              } else if (route.name === 'Produk') {
+              } else if (route.name === 'Katalog') {
                 iconName = focused ? 'apps' : 'apps-outline';
               } else if (route.name === 'Saya') {
                 iconName = focused ? 'ios-person' : 'ios-person-outline';
@@ -80,7 +81,7 @@ const MainApp = ({navigation}) => {
         >
           <Tab.Screen name="Home" component={Home} 
             options={{ headerShown: false,}}/>
-          <Tab.Screen name="Produk" component={Katalog} 
+          <Tab.Screen name="Katalog" component={Katalog} 
             options={{ 
               headerShown: false,
             }}/>
@@ -91,9 +92,6 @@ const MainApp = ({navigation}) => {
         </Tab.Navigator>
     );
   }
-
-  
-  
 }
 
 
@@ -112,6 +110,9 @@ export default function App() {
         />
         <Stack.Navigator initialRouteName="Splash">
           <Stack.Screen name="Splash" component={Splash} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="Login" component={Login} options={{ 
               headerShown : false
           }} />
           <Stack.Screen name="MainApp" component={MainApp} options={{ 

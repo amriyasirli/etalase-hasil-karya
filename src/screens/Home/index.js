@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 import {
   IconButton,
@@ -22,6 +23,7 @@ import font from '../../style/font';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import firestore from '@react-native-firebase/firestore';
 import Loading from '../../component/loading';
+import storage from '@react-native-firebase/storage';
 
 const Home = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,34 +31,60 @@ const Home = ({navigation}) => {
   const [kategori, setKategori] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [viewImages, setViewImages] = useState([])
+  const [loadingImg, setLoadingImg] = useState(true)
+
   const onChangeSearch = query => setSearchQuery(query);
   const carousel = useRef();
   const [activeSlide, setActiveSlide] = useState(0);
 
+  const onRefresh = () => {
+    setProduk([])
+    setTimeout(() => {
+        loadData();
+    }, 1000);
+};
+
   useEffect(() => {
-    firestore()
-      .collection('Users')
-      .add({
-        name: 'Ada Lovelace',
-        age: 30,
-      })
-      .then(() => {
-        console.log('User added!');
-      });
     loadData();
+
   }, []);
+
+  // const loadImages = async (id) => {
+  //   const urls = await fetchImages(id);
+  //   // setImages(data => [...data, documentSnapshot.data()]);
+  //   setImages(urls);
+  //   urls.map((x) => {
+  //     setViewImages(prevState => [...prevState, {uri:x}]);
+  //     setLoadingImg(false);
+  //   })
+  //   // console.log('gambar: '+viewImages)
+    
+  // };
+
+  // const fetchImages = async (id) => {
+  //   let result = await storage().ref('Gambar/'+id+'/').listAll();
+  //   let urlPromises = result.items.map(imageRef => imageRef.getDownloadURL());
+
+  //   return Promise.all(urlPromises);
+  // };
 
   const loadData = () => {
     firestore()
       .collection('Produk')
-      .limit(5)
       .orderBy('tanggal', 'desc')
+      // .limit(5)
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {
           setProduk(data => [...data, documentSnapshot.data()]);
-          //   setIsLoading(false);
+          // const docData = {...documentSnapshot.data()};
+
+          // loadImages(docData.id)
+            setIsLoading(false);
         });
+    // console.log('gambar: '+produk)
+
         loadKategori();
       });
   };
@@ -73,11 +101,12 @@ const Home = ({navigation}) => {
       });
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item, index}) => {
+    if(isLoading) return <Loading />
     return (
       <Card style={styles.items}>
         <Card.Cover
-          source={{uri: 'https://picsum.photos/700'}}
+          source={{uri:item.uri}}
           style={{height: 156}}
         />
         <IconButton
@@ -122,12 +151,15 @@ const Home = ({navigation}) => {
 
   return (
     <ScrollView vertical={true}
-        contentContainerStyle={{paddingBottom:Metrics.screenWidth * (50 / 365)}}
+      refreshControl={
+        <RefreshControl refreshing={isLoading} onRefresh={()=>onRefresh()} />
+      }
+      contentContainerStyle={{paddingBottom:Metrics.screenWidth * (50 / 365)}}
     >
       <View style={styles.header}>
-        <IconButton icon="menu" color={color.icon} />
+        <IconButton icon="bell" color={color.icon} />
         <View style={{alignItems: 'center'}}>
-          <IconButton icon="account" color={color.primary} />
+          <IconButton icon="account" color={color.primary} onPress={()=>navigation.navigate('Login')} />
           <Caption
             style={{fontSize: 10, marginTop: -10, color: color.textPrimary}}>
             Login
@@ -163,6 +195,8 @@ const Home = ({navigation}) => {
         data={produk}
         keyExtractor={(produk, index) => index.toString()}
         numColumns={2}
+        // snapToEnd={3}
+        maxToRenderPerBatch={3}
         renderItem={renderItem}
         sliderWidth={Metrics.screenWidth}
         itemWidth={Metrics.screenWidth / 2 - 30}
