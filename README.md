@@ -4,7 +4,7 @@ Sebuah aplikasi e-talase hasil karya inovatif siswa SMK berbasis mobile, dikemba
 
 <p align="center">
   <img src="src/images/logo2.png" width="300" />
-  <img src="https://cdn4.iconfinder.com/data/icons/logos-3/600/React.js_logo-512.png" width="100" />
+  <img src="https://www.matawebsite.com/images/blog/476_apa_itu_react_native.png" width="200" />
 </p>
 
 # Screenshot
