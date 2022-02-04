@@ -85,7 +85,7 @@ const addProduk = ({navigation}) => {
   }
 
 
-  const addFirestore = (url) => {
+  const addFirestore = (url, filename) => {
     firestore()
         .collection('Produk')
         .doc(id)
@@ -97,6 +97,7 @@ const addProduk = ({navigation}) => {
             creator: creator,
             wa: wa,
             uri: url,
+            fileName: filename,
             deskripsi: deskripsi,
         })
         .then(() => {
@@ -113,7 +114,7 @@ const addProduk = ({navigation}) => {
         .getDownloadURL()
         .then(url => {
           // setUriImage(url)
-          addFirestore(url)
+          addFirestore(url, fileName)
         })
         .catch(e => console.log('getting downloadURL of image error => ', e));
   }
@@ -145,17 +146,6 @@ const addProduk = ({navigation}) => {
           getlink(filename)
         });
   };
-
-  const setUri = async (id, image) => {
-    let imageRef = storage().ref('Gambar/' + id + '/' + image);
-    await imageRef
-    .getDownloadURL()
-    .then(url => {
-        //from url you can fetched the uploaded image easily
-        setUriImage(url);
-    })
-    .catch(e => console.log('getting downloadURL of image error => ', e));
-  }
 
   const openGallery = () => {
     const options = {
@@ -408,5 +398,6 @@ const styles = StyleSheet.create({
     marginHorizontal:width/15,
     elevation:12,
     shadowColor:color.textPrimary,
+    marginBottom:30,
   }
 });

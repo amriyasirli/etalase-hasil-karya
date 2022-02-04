@@ -29,34 +29,34 @@ import Carousel, {Pagination} from 'react-native-snap-carousel';
 import DatePicker from 'react-native-date-picker';
 import dataEntry from '../../service/dataEntri'
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import uuid from 'react-native-uuid';
 import Loading from '../../component/loading'
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
 const updateProduk = ({route, navigation}) => {
-  const {
-    route_id,
-    route_namaProduk,
-    route_kategori,
-    route_tanggal,
-    route_creator,
-    route_wa,
-    route_deskripsi
-  } = route.params;
+  const {id} = route.params;
 
-  const [namaProduk, setNamaProduk] = useState(route_namaProduk);
-  const [kategori, setKategori] = useState(route_kategori);
-  const [tanggal, setTanggal] = useState(route_tanggal);
-  const [creator, setCreator] = useState(route_creator);
-  const [wa, setWa] = useState(route_wa);
-  const [deskripsi, setDeskripsi] = useState(route_deskripsi);
+  const [namaProduk, setNamaProduk] = useState('');
+  // const [kategori, setKategoriegori] = useState('');
+  const [kategori, setKategori] = useState('');
+  const [tanggal, setTanggal] = useState('');
+  const [creator, setCreator] = useState('');
+  const [wa, setWa] = useState('');
+  const [deskripsi, setDeskripsi] = useState('');
+  const [uri, setUri] = useState('');
+  const [fileName, setFileName] = useState('');
   const [visible, setVisible] = useState(false);
   const [modalDate, setModalDate] = useState(false);
 
+  // const [image, setImage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [btnLoading, setbtnLoading] = useState(false);
+  const [upload, setUpload] = useState(true);
 
   const [dataKategori, setDataKategori] = useState([]);
 
@@ -68,7 +68,7 @@ const updateProduk = ({route, navigation}) => {
   const hideModalDate = () => setModalDate(false);
 
   useEffect(() => {
-    
+    // console.log(id)
     loadKategori()
     
   }, [])
@@ -81,23 +81,47 @@ const updateProduk = ({route, navigation}) => {
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {
           setDataKategori(data => [...data, documentSnapshot.data()]);
-          setIsLoading(false)
+          loadProduk()
         });
       });
   }
 
-  const updateProduk = () => {
+  const loadProduk = () => {
+    firestore()
+      .collection('Produk')
+      .doc(id)
+      .get()
+      .then(querySnapshot => {
+        // querySnapshot.forEach(documentSnapshot => {
+          const docData = querySnapshot.data();
+          console.log(docData.wa)
+          setNamaProduk(docData.namaProduk);
+          setKategori(docData.kategori);
+          setCreator(docData.creator);
+          setWa(docData.wa);
+          setDeskripsi(docData.deskripsi);
+          setTanggal(docData.tanggal);
+          setUri(docData.uri);
+          setFileName(docData.fileName);
+          setIsLoading(false)
+        // });
+      });
+  }
+
+  const addFirestore = (url) => {
     
     firestore()
       .collection('Produk')
-      .doc(route_id)
+      .doc(id)
       .update({
           namaProduk: namaProduk,
           kategori: kategori,
           tanggal: tanggal,
           creator: creator,
           wa: wa,
+          fileName: fileName,
           deskripsi: deskripsi,
+          uri:url
       })
       .then(() => {
           ToastAndroid.show('Data diupdate, tarik kebawah untuk refresh !', 2000);
@@ -106,6 +130,58 @@ const updateProduk = ({route, navigation}) => {
           }, 1000);
       });
   }
+
+  const getlink = (fileName) => {
+    let imageRef = storage().ref('Gambar/'+ id + '/' + fileName);
+      imageRef
+        .getDownloadURL()
+        .then(url => {
+          // setUriImage(url)
+          addFirestore(url)
+        })
+        .catch(e => console.log('getting downloadURL of image error => ', e));
+  }
+
+  const updateProduk = async () => {
+    if(uri == ""){
+      ToastAndroid.show('Masukkan gambar!', 2000);
+    }
+    else{
+      setbtnLoading(true);
+      uploadImage();
+      
+    }
+  }
+  
+  const hapus = () => {
+    let imageRef = storage().ref('Gambar/' + id + '/' + fileName);
+        imageRef
+        .delete()
+        .then(() => {
+            ToastAndroid.show('gambar diubah', 1000)
+        })
+        .catch(e => {
+            console.log('error on image deletion => ', e);
+        });
+  }
+
+  const uploadImage = async () => {
+    // const uri = uri;
+      hapus()
+        //------- upload gambar -------//
+        const namaFoto = await uri.substring(uri.lastIndexOf('/') + 1);
+        const uploadUri =
+          Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+        const task = storage()
+          .ref('Gambar/' + id + '/')
+          .child(namaFoto)
+          .putFile(uploadUri);
+        // set progress state
+        task.on('state_changed', snapshot => {
+          ToastAndroid.show('Harap tunggu!', 1000);
+          getlink(namaFoto)
+        });
+  };
 
   const renderItem = ({item}) => {
     return(
@@ -120,6 +196,34 @@ const updateProduk = ({route, navigation}) => {
       />
     )
   }
+
+  const openGallery = () => {
+    const options = {
+      quality: 1,
+      selectionLimit: 1,
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        Alert.alert('Warning!', 'Ambil foto dari galeri atau kameramu');
+      } else if (response.error) {
+        Alert.alert('Warning!', 'Terjadi kesalahan !');
+      } else if (response.customButton) {
+        Alert.alert(
+          'Warning!',
+          'User tapped custom button: ',
+          response.customButton,
+        );
+      } else {
+        setUri(response.assets[0].uri);
+        setUpload(true)
+        // console.log(arrayImages[0]);
+      }
+    });
+  };
 
   if(isLoading) return <Loading />
   
@@ -215,6 +319,34 @@ const updateProduk = ({route, navigation}) => {
               numberOfLines={6}
               onChangeText={text => setDeskripsi(text)}
             />
+            {!upload ? (
+              <View style={styles.containerCamera}>
+                <IconButton 
+                  icon="image-plus"
+                  size={38}
+                  onPress={()=> openGallery()}
+                  color={color.primary}
+                  style={{backgroundColor:color.lightPrimary}}
+                />
+                <Subheading>Upload Gambar</Subheading>
+              </View>
+            ):(
+              <>
+              <Subheading style={{marginHorizontal:width*(30/365), marginTop:height*(5/365), fontFamily:'Poppins-Medium', color:color.textSecondary}}>Foto Produk</Subheading>
+              <Card style={styles.imageCard}>
+                <Card.Cover
+                  source={{uri: uri}}
+                  style={{height: height*(100/365)}}
+                />
+                <IconButton
+                  icon="refresh"
+                  color={color.primary}
+                  onPress={()=>openGallery()}
+                  style={{position:'absolute', top:0, right:0, backgroundColor:color.lightPrimary}}
+                />
+              </Card>
+              </>
+            )}
           </List.Section>
         </View>
         <Portal>
@@ -242,8 +374,8 @@ const updateProduk = ({route, navigation}) => {
         </Portal>
     </ScrollView>
     <View style={{width:width, padding:20}} >
-      <Button uppercase={false} color={color.primary} mode="contained" labelStyle={styles.button} onPress={() => updateProduk()}>
-          Simpan
+      <Button uppercase={false} color={color.primary} disabled={btnLoading} mode="contained" labelStyle={styles.button} onPress={() => updateProduk()}>
+          Simpan Perubahan
       </Button>
     </View>
 </Provider>
@@ -265,6 +397,11 @@ const styles = StyleSheet.create({
     padding: 20,
     margin:30,
     borderRadius:6
+  },
+  containerCamera:{
+    justifyContent:'center',
+    alignItems:'center',
+    paddingVertical:10
   },
   title: {
     color: color.textWhite,
@@ -298,5 +435,11 @@ const styles = StyleSheet.create({
     color:color.textWhite,
     fontFamily:'Poppins-Medium',
     fontSize:font.size.font10,
+  },
+  imageCard:{
+    marginHorizontal:width/15,
+    elevation:12,
+    shadowColor:color.textPrimary,
+    marginBottom:30
   }
 });

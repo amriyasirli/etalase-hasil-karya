@@ -73,7 +73,7 @@ const Home = ({navigation}) => {
     firestore()
       .collection('Produk')
       .orderBy('tanggal', 'desc')
-      // .limit(5)
+      .limit(5)
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {

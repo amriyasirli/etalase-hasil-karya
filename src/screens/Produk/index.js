@@ -26,6 +26,7 @@ import font from '../../style/font';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import dataEntry from '../../service/dataEntri'
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import Loading from '../../component/loading'
 
 
@@ -63,7 +64,6 @@ const Produk = ({navigation}) => {
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {
           setProduk(data => [...data, documentSnapshot.data()]);
-          // setIsLoading(false);
 
           // setFilteredDataSource(masterDataSource);
           // setLoading(false)
@@ -78,13 +78,29 @@ const Produk = ({navigation}) => {
         
       });
   }
+
+  const hapusGambar = (id, fileName) => {
+    let imageRef = storage().ref('Gambar/' + id + '/' + fileName);
+        imageRef
+        .delete()
+        .then(() => {
+            ToastAndroid.show('Proses...', 1000)
+        })
+        .catch(e => {
+            console.log('error on image deletion => ', e);
+        });
+  }
   
-  const hapus = (id) => {
-    firestore()
+  const hapus = async (id, fileName) => {
+    const idGambar = id;
+    const fileGambar = fileName;
+    hapusGambar(idGambar, fileGambar)
+    await firestore()
       .collection('Produk')
       .doc(id)
       .delete()
       .then(() => {
+        onRefresh();
         ToastAndroid.show('Data dihapus, tarik kebawah untuk refresh !', 2000);
       });
   }
@@ -122,7 +138,7 @@ const Produk = ({navigation}) => {
                 [
                   {
                     text: 'Ya',
-                    onPress:()=>hapus(item.id)
+                    onPress:()=>hapus(item.id, item.fileName)
                   },
                   {text: 'Cancel', style: 'cancel'},
                 ],
