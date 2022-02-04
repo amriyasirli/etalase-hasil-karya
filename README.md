@@ -3,7 +3,7 @@
 Sebuah aplikasi e-talase hasil karya inovatif siswa SMK berbasis mobile, dikembangkan dengan React Native.
 
 <p align="center">
-  <img src="src/images/logo2.png" />
+  <img src="src/images/logo2.png" width="300" />
   <img src="https://img.shields.io/npm/v/react-native-image-picker" />
 </p>
 
