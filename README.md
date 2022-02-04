@@ -9,10 +9,10 @@ Sebuah aplikasi e-talase hasil karya inovatif siswa SMK berbasis mobile, dikemba
 # Screenshot
 
 <p align="left">
-  <img src="src/images/1.jpg" width="200" />
-  <img src="src/images/2.jpg" width="200" />
-  <img src="src/images/3.jpg" width="200" />
-  <img src="src/images/3.jpg" width="200" />
+  <img src="src/images/1.jpg" width="150" />
+  <img src="src/images/2.jpg" width="150" />
+  <img src="src/images/3.jpg" width="150" />
+  <img src="src/images/3.jpg" width="150" />
 </p>
 
 ## Step-by-step
