@@ -4,7 +4,7 @@ Sebuah aplikasi e-talase hasil karya inovatif siswa SMK berbasis mobile, dikemba
 
 <p align="center">
   <img src="src/images/logo2.png" width="300" />
-  <img src="https://www.matawebsite.com/images/blog/476_apa_itu_react_native.png" width="200" />
+  <img src="https://lampungkode.id/wp-content/uploads/2021/08/react-native-logo.png" width="200" />
 </p>
 
 # Screenshot
