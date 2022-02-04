@@ -13,7 +13,7 @@ Sebuah aplikasi e-talase hasil karya inovatif siswa SMK berbasis mobile, dikemba
   <img src="src/images/1.jpg" width="150" />
   <img src="src/images/2.jpg" width="150" />
   <img src="src/images/3.jpg" width="150" />
-  <img src="src/images/3.jpg" width="150" />
+  <img src="src/images/4.jpg" width="150" />
 </p>
 
 ## Step-by-step
