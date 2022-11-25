@@ -4,8 +4,9 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
+  FlatList,
   RefreshControl,
+  Image,
 } from 'react-native';
 import {
   IconButton,
@@ -15,8 +16,10 @@ import {
   Caption,
   Subheading,
   Card,
-  Button,
+  List,
+  Avatar,
 } from 'react-native-paper';
+
 import Metrics from '../../style/metrics';
 import color from '../../style/colors';
 import font from '../../style/font';
@@ -28,46 +31,26 @@ import storage from '@react-native-firebase/storage';
 const Home = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [produk, setProduk] = useState([]);
-  const [kategori, setKategori] = useState([]);
+  const [jurusan, setJurusan] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [viewImages, setViewImages] = useState([])
-  const [loadingImg, setLoadingImg] = useState(true)
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
 
   const onChangeSearch = query => setSearchQuery(query);
   const carousel = useRef();
   const [activeSlide, setActiveSlide] = useState(0);
 
   const onRefresh = () => {
-    setProduk([])
+    setProduk([]);
     setTimeout(() => {
-        loadData();
+      loadData();
     }, 1000);
-};
+  };
 
   useEffect(() => {
     loadData();
-
   }, []);
-
-  // const loadImages = async (id) => {
-  //   const urls = await fetchImages(id);
-  //   // setImages(data => [...data, documentSnapshot.data()]);
-  //   setImages(urls);
-  //   urls.map((x) => {
-  //     setViewImages(prevState => [...prevState, {uri:x}]);
-  //     setLoadingImg(false);
-  //   })
-  //   // console.log('gambar: '+viewImages)
-    
-  // };
-
-  // const fetchImages = async (id) => {
-  //   let result = await storage().ref('Gambar/'+id+'/').listAll();
-  //   let urlPromises = result.items.map(imageRef => imageRef.getDownloadURL());
-
-  //   return Promise.all(urlPromises);
-  // };
 
   const loadData = () => {
     firestore()
@@ -78,37 +61,55 @@ const Home = ({navigation}) => {
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {
           setProduk(data => [...data, documentSnapshot.data()]);
-          // const docData = {...documentSnapshot.data()};
+          setFilteredDataSource(produk);
 
-          // loadImages(docData.id)
-            setIsLoading(false);
+          setIsLoading(false);
         });
-    // console.log('gambar: '+produk)
 
-        loadKategori();
+        loadJurusan();
       });
   };
 
-  const loadKategori = () => {
+  const loadJurusan = () => {
     firestore()
-      .collection('Kategori')
+      .collection('Jurusan')
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {
-          setKategori(data => [...data, documentSnapshot.data()]);
+          setJurusan(data => [...data, documentSnapshot.data()]);
           setIsLoading(false);
         });
       });
   };
 
+  const searchFilterFunction = text => {
+    console.log(filteredDataSource);
+    if (text) {
+      const newData = produk.filter(function (item) {
+        const itemData = item.namaProduk
+          ? item.namaProduk.toUpperCase()
+          : ''.toUpperCase();
+        const itemData2 = item.jurusan
+          ? item.jurusan.toUpperCase()
+          : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return (
+          itemData.indexOf(textData) > -1 || itemData2.indexOf(textData) > -1
+        );
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      setFilteredDataSource(produk);
+      setSearch(text);
+    }
+  };
+
   const renderItem = ({item, index}) => {
-    if(isLoading) return <Loading />
+    if (isLoading) return <Loading />;
     return (
       <Card style={styles.items}>
-        <Card.Cover
-          source={{uri:item.uri}}
-          style={{height: 156}}
-        />
+        <Card.Cover source={{uri: item.uri}} style={{height: 156}} />
         <IconButton
           onPress={() => {}}
           icon="heart-outline"
@@ -117,31 +118,58 @@ const Home = ({navigation}) => {
         />
         <Caption style={styles.produkName}>{item.namaProduk}</Caption>
         <View style={styles.containerPrice}>
-          <Caption style={styles.price}>{item.kategori}</Caption>
+          <Caption style={styles.price}>{item.jurusan}</Caption>
           <IconButton
             icon="chevron-right"
             size={20}
             color={color.primary}
             style={{backgroundColor: color.lightPrimary}}
-            onPress={() => navigation.navigate('Detail', {id: item.id})}
+            onPress={() => navigation.navigate('Detail', {
+              id: item.id,
+              idCreator: item.idCreator,
+            })}
           />
         </View>
       </Card>
     );
   };
 
-  const slide_kategori = ({item}) => {
+  const ItemView = ({item}) => {
+    return (
+      <List.Accordion
+        title={item.namaProduk.toUpperCase()}
+        titleStyle={{fontFamily: 'Montserrat-Medium'}}
+        description={<Text>{item.jurusan}</Text>}
+        descriptionStyle={{fontFamily: 'Montserrat'}}
+        onPress={() => navigation.navigate('Detail', {
+          id: item.id,
+          idCreator: item.idCreator,
+        })}
+        left={() => (
+          <Avatar.Image size={24} source={{uri: item.uri}} />
+        )}></List.Accordion>
+    );
+  };
+
+  const ItemSeparatorView = () => {
+    return (
+      // Flat List Item Separator
+      <View
+        style={{
+          height: 0.5,
+          width: '100%',
+          backgroundColor: '#C8C8C8',
+        }}
+      />
+    );
+  };
+
+  const slide_jurusan = ({item}) => {
     return (
       <View style={{flexDirection: 'row'}}>
-        <TouchableOpacity
-          style={styles.card2}
-        >
-          <IconButton
-            color={color.primary}
-            size={32}
-            icon="tag-outline"
-          />
-          <Text style={styles.subtitleDark}>{item.kategori}</Text>
+        <TouchableOpacity style={styles.card2}>
+          <IconButton color={color.primary} size={32} icon="tag-outline" />
+          <Text style={styles.subtitleDark}>{item.jurusan}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -150,60 +178,97 @@ const Home = ({navigation}) => {
   if (isLoading) return <Loading />;
 
   return (
-    <ScrollView vertical={true}
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={()=>onRefresh()} />
-      }
-      contentContainerStyle={{paddingBottom:Metrics.screenWidth * (50 / 365)}}
-    >
-      <View style={styles.header}>
-        <IconButton icon="bell" color={color.icon} />
-        <View style={{alignItems: 'center'}}>
-          <IconButton icon="account" color={color.primary} onPress={()=>navigation.navigate('Login')} />
-          <Caption
-            style={{fontSize: 10, marginTop: -10, color: color.textPrimary}}>
-            Login
-          </Caption>
-        </View>
-      </View>
-      <Headline style={styles.Hello}>
-        Welcome Guys, Lihatlah hasil karya dari siswa kami !{' '}
-      </Headline>
-      {/* <View style={{flex:1,flexDirection:'row', justifyContent:'space-between',alignItems:'center', width:Dimensions.get('window').width}}> */}
-      <Searchbar
-        placeholder="Search"
-        onChangeText={onChangeSearch}
-        value={searchQuery}
-        style={styles.searchBar}
-        inputStyle={{fontSize: 14}}
-      />
-      {/* <IconButton icon="home" /> */}
-      {/* </View> */}
-      <Subheading style={styles.rekomended}>Kategori</Subheading>
-      <Carousel
-        // ref={carousel}
-        data={kategori}
-        renderItem={slide_kategori}
-        sliderWidth={Metrics.screenWidth}
-        itemWidth={Metrics.screenWidth / 2 - 30}
-        activeSlideAlignment="start"
-        containerCustomStyle={styles.sliderContentContainer}
-      />
-      <Subheading style={styles.rekomended}>Produk terbaru !</Subheading>
-      <Carousel
-        //   ref={(c) => { dataEntry = c; }}
-        data={produk}
-        keyExtractor={(produk, index) => index.toString()}
-        numColumns={2}
-        // snapToEnd={3}
-        maxToRenderPerBatch={3}
-        renderItem={renderItem}
-        sliderWidth={Metrics.screenWidth}
-        itemWidth={Metrics.screenWidth / 2 - 30}
-        activeSlideAlignment={'start'}
-        //   hasParallaxImages={true}
-        containerCustomStyle={styles.sliderContentContainer}
-      />
+    <ScrollView
+          vertical={true}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={() => onRefresh()}
+            />
+          }
+          contentContainerStyle={{
+            paddingBottom: Metrics.screenWidth * (50 / 365),
+          }}>
+          <View style={styles.header}>
+            <IconButton icon="bell" color={color.icon} />
+            <View style={{alignItems: 'center'}}>
+            <Image source={require('../../images/logo2.png')} style={styles.logo} />
+              {/* <IconButton
+                icon="account"
+                color={color.primary}
+                onPress={() => navigation.navigate('Login')}
+              />
+              <Caption
+                style={{
+                  fontSize: 10,
+                  marginTop: -10,
+                  color: color.textPrimary,
+                }}>
+                Login
+              </Caption> */}
+            </View>
+          </View>
+          <Headline style={styles.Hello}>
+            Welcome Guys, Lihatlah hasil karya dari siswa kami !{' '}
+          </Headline>
+          {/* <View style={{flex:1,flexDirection:'row', justifyContent:'space-between',alignItems:'center', width:Dimensions.get('window').width}}> */}
+          <Searchbar
+            style={styles.searchBar}
+            placeholder="Search..."
+            onChangeText={text => searchFilterFunction(text)}
+            value={search}
+            // clearIcon={() => {}}
+          />
+          
+        
+      {!search ? (
+        <>
+        <Subheading style={styles.rekomended}>Jurusan</Subheading>
+        <Carousel
+          // ref={carousel}
+          data={jurusan}
+          renderItem={slide_jurusan}
+          sliderWidth={Metrics.screenWidth}
+          itemWidth={Metrics.screenWidth / 2 - 30}
+          activeSlideAlignment="start"
+          containerCustomStyle={styles.sliderContentContainer}
+        />
+        <Subheading style={styles.rekomended}>Produk terbaru !</Subheading>
+        <Carousel
+          //   ref={(c) => { dataEntry = c; }}
+          data={produk}
+          keyExtractor={(produk, index) => index.toString()}
+          numColumns={2}
+          // snapToEnd={3}
+          maxToRenderPerBatch={3}
+          renderItem={renderItem}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={() => onRefresh()}
+            />
+          }
+          sliderWidth={Metrics.screenWidth}
+          itemWidth={Metrics.screenWidth / 2 - 30}
+          activeSlideAlignment={'start'}
+          //   hasParallaxImages={true}
+          containerCustomStyle={styles.sliderContentContainer}
+        />
+        </>
+      ) : (
+        <List.Section title="Hasil pencarian !">
+        <FlatList
+          data={filteredDataSource}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={ItemSeparatorView}
+          renderItem={ItemView}
+          // ListFooterComponent={footer}
+          ListFooterComponent={
+            <View style={{height: 200, backgroundColor: 'white'}}></View>
+          }
+        />
+      </List.Section>
+      )}
     </ScrollView>
   );
 };
@@ -240,7 +305,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
     color: color.textPrimary,
-    marginTop:20,
+    marginTop: 20,
     marginHorizontal: Metrics.screenWidth * (25 / 365),
   },
   cardRekomended: {
@@ -322,4 +387,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  logo:{
+    width:Metrics.screenWidth * (56 / 365),
+    height:Metrics.screenHeight * (23 / 365)
+  }
 });

@@ -14,6 +14,7 @@
     "@react-native-firebase/app": "^14.2.3",
     "@react-native-firebase/firestore": "^14.2.3",
     "@react-native-firebase/storage": "^14.2.3",
+    "@react-native-material/core": "^1.3.7",
     "@react-navigation/bottom-tabs": "^6.0.9",
     "@react-navigation/native": "^6.0.6",
     "@react-navigation/native-stack": "^6.2.5",
@@ -32,7 +33,8 @@
     "react-native-snap-carousel": "^3.9.1",
     "react-native-svg-transformer": "^1.0.0",
     "react-native-uuid": "^2.0.1",
-    "react-native-vector-icons": "^9.0.0"
+    "react-native-vector-icons": "^9.0.0",
+    "rn-fetch-blob-v2": "^0.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

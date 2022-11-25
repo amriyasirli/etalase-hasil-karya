@@ -42,23 +42,25 @@ const updateProduk = ({route, navigation}) => {
   const {id} = route.params;
 
   const [namaProduk, setNamaProduk] = useState('');
-  // const [kategori, setKategoriegori] = useState('');
-  const [kategori, setKategori] = useState('');
-  const [tanggal, setTanggal] = useState('');
+  const [jurusan, setJurusan] = useState('');
   const [creator, setCreator] = useState('');
-  const [wa, setWa] = useState('');
+  const [idCreator, setIdCreator] = useState("");
+
   const [deskripsi, setDeskripsi] = useState('');
   const [uri, setUri] = useState('');
   const [fileName, setFileName] = useState('');
   const [visible, setVisible] = useState(false);
   const [modalDate, setModalDate] = useState(false);
+  
 
   // const [image, setImage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [btnLoading, setbtnLoading] = useState(false);
   const [upload, setUpload] = useState(true);
+  const [changeImage, seChangeImage] = useState(false);
 
-  const [dataKategori, setDataKategori] = useState([]);
+  const [dataCreator, setDataCreator] = useState([]);
+
 
   
 
@@ -69,22 +71,10 @@ const updateProduk = ({route, navigation}) => {
 
   useEffect(() => {
     // console.log(id)
-    loadKategori()
+    loadCreator()
     
   }, [])
 
-  const loadKategori = () => {
-    firestore()
-      .collection('Kategori')
-      .orderBy('kategori', 'desc')
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(documentSnapshot => {
-          setDataKategori(data => [...data, documentSnapshot.data()]);
-          loadProduk()
-        });
-      });
-  }
 
   const loadProduk = () => {
     firestore()
@@ -94,17 +84,26 @@ const updateProduk = ({route, navigation}) => {
       .then(querySnapshot => {
         // querySnapshot.forEach(documentSnapshot => {
           const docData = querySnapshot.data();
-          console.log(docData.wa)
           setNamaProduk(docData.namaProduk);
-          setKategori(docData.kategori);
           setCreator(docData.creator);
-          setWa(docData.wa);
           setDeskripsi(docData.deskripsi);
-          setTanggal(docData.tanggal);
           setUri(docData.uri);
           setFileName(docData.fileName);
           setIsLoading(false)
         // });
+      });
+  }
+
+  const loadCreator = () => {
+    firestore()
+      .collection('Creator')
+      .orderBy('nama', 'asc')
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(documentSnapshot => {
+          setDataCreator(data => [...data, documentSnapshot.data()]);
+        });
+        loadProduk();
       });
   }
 
@@ -115,13 +114,32 @@ const updateProduk = ({route, navigation}) => {
       .doc(id)
       .update({
           namaProduk: namaProduk,
-          kategori: kategori,
-          tanggal: tanggal,
+          jurusan: jurusan,
           creator: creator,
-          wa: wa,
+          idCreator: idCreator,
           fileName: fileName,
           deskripsi: deskripsi,
           uri:url
+      })
+      .then(() => {
+          ToastAndroid.show('Data diupdate, tarik kebawah untuk refresh !', 2000);
+          setTimeout(() => {
+            navigation.navigate('Produk');
+          }, 1000);
+      });
+  }
+
+  const addWithoutImage = () => {
+    
+    firestore()
+      .collection('Produk')
+      .doc(id)
+      .update({
+          namaProduk: namaProduk,
+          jurusan: jurusan,
+          creator: creator,
+          idCreator: idCreator,
+          deskripsi: deskripsi,
       })
       .then(() => {
           ToastAndroid.show('Data diupdate, tarik kebawah untuk refresh !', 2000);
@@ -143,10 +161,12 @@ const updateProduk = ({route, navigation}) => {
   }
 
   const updateProduk = async () => {
-    if(uri == ""){
+    if(uri == "" || namaProduk == "" || jurusan == "" || creator == ""){
       ToastAndroid.show('Masukkan gambar!', 2000);
-    }
-    else{
+    } if(changeImage == false) {
+      setbtnLoading(true);
+      addWithoutImage();
+    } else{
       setbtnLoading(true);
       uploadImage();
       
@@ -186,13 +206,15 @@ const updateProduk = ({route, navigation}) => {
   const renderItem = ({item}) => {
     return(
       <List.Item
-        title={item.kategori}
+        title={item.nama}
         titleStyle={{fontFamily:'Poppins-Regular', color:color.textSecondary}}
         onPress={() => {
           hideModal();
-          setKategori(item.kategori)
+          setCreator(item.nama)
+          setIdCreator(item.id)
+          setJurusan(item.jurusan)
         }}
-        left={props => <List.Icon {...props} icon="tag-outline" />}
+        left={props => <List.Icon {...props} icon="account-check-outline" />}
       />
     )
   }
@@ -220,6 +242,7 @@ const updateProduk = ({route, navigation}) => {
       } else {
         setUri(response.assets[0].uri);
         setUpload(true)
+        seChangeImage(true)
         // console.log(arrayImages[0]);
       }
     });
@@ -246,25 +269,10 @@ const updateProduk = ({route, navigation}) => {
               }}
               onChangeText={text => setNamaProduk(text)}
             />
-            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonKategori} onPress={showModal}>
-                {kategori}
+            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
+                {jurusan}
             </Button> */}
-            <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
-              <TextInput
-                label="Kategori"
-                value={kategori}
-                disabled={true}
-                mode="outlined"
-                style={styles.tanggal}
-                theme={{
-                  colors: {primary: color.textLight, underlineColor: 'transparent'},
-                }}
-              />
-              <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModal}>
-                  Pilih
-              </Button>
-            </View>
-            <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+            {/* <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
               <TextInput
                 label="Tanggal"
                 value={
@@ -280,33 +288,27 @@ const updateProduk = ({route, navigation}) => {
                 theme={{
                   colors: {primary: color.textLight, underlineColor: 'transparent'},
                 }}
-                onChangeText={text => setCreator(text)}
+                onChangeText={text => setTanggal(text)}
               />
               <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModalDate}>
                   Atur
               </Button>
+            </View> */}
+            <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+              <TextInput
+                  label="Creator"
+                  value={creator}
+                  disabled={true}
+                  mode="outlined"
+                  style={styles.tanggal}
+                  theme={{
+                    colors: {primary: color.textLight, underlineColor: 'transparent'},
+                  }}
+                />
+              <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModal}>
+                  Pilih
+              </Button>
             </View>
-            <TextInput
-              label="Kreator"
-              value={creator}
-              mode="outlined"
-              style={styles.input}
-              theme={{
-                colors: {primary: color.textLight, underlineColor: 'transparent'},
-              }}
-              onChangeText={text => setCreator(text)}
-            />
-            <TextInput
-              label="Nomor Whatsapp"
-              value={wa}
-              mode="outlined"
-              keyboardType="numeric"
-              style={styles.input}
-              theme={{
-                colors: {primary: color.textLight, underlineColor: 'transparent'},
-              }}
-              onChangeText={text => setWa(text)}
-            />
             <TextInput
               label="Deskripsi Produk"
               value={deskripsi}
@@ -351,15 +353,15 @@ const updateProduk = ({route, navigation}) => {
         </View>
         <Portal>
           <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.containerModal}>
-            <List.Subheader style={{fontFamily:'Poppins-SemiBold', color:color.textPrimary}}>Pilih Kategori</List.Subheader>
+            <List.Subheader style={{fontFamily:'Poppins-SemiBold', color:color.textPrimary}}>Pilih Creator</List.Subheader>
             <FlatList 
-              data={dataKategori}
+              data={dataCreator}
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderItem}
             />
           </Modal>
         </Portal>
-        <Portal>
+        {/* <Portal>
           <Modal visible={modalDate} onDismiss={hideModalDate} contentContainerStyle={styles.containerModal}>
             <List.Subheader style={{fontFamily:'Poppins-SemiBold', color:color.textPrimary}}>Atur Tanggal</List.Subheader>
             <DatePicker
@@ -371,7 +373,7 @@ const updateProduk = ({route, navigation}) => {
               }}
             />
           </Modal>
-        </Portal>
+        </Portal> */}
     </ScrollView>
     <View style={{width:width, padding:20}} >
       <Button uppercase={false} color={color.primary} disabled={btnLoading} mode="contained" labelStyle={styles.button} onPress={() => updateProduk()}>
@@ -426,7 +428,7 @@ const styles = StyleSheet.create({
     fontFamily:'Poppins-Medium',
     fontSize:font.size.font12,
   },
-  buttonKategori:{
+  buttonJurusan:{
     color:color.textSecondary,
     fontFamily:'Poppins-Medium',
     fontSize:font.size.font12,

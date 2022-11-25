@@ -38,14 +38,14 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
-const id = uuid.v4();
 
 const addProduk = ({navigation}) => {
   const [namaProduk, setNamaProduk] = useState("");
-  const [kategori, setKategori] = useState("Pilih Kategori");
+  const [jurusan, setJurusan] = useState("");
   const [tanggal, setTanggal] = useState(new Date());
   const [creator, setCreator] = useState("");
-  const [wa, setWa] = useState("62");
+  const [idCreator, setIdCreator] = useState("");
+  // const [wa, setWa] = useState("+62");
   const [deskripsi, setDeskripsi] = useState("");
 
   const [image, setImage] = useState("");
@@ -54,48 +54,59 @@ const addProduk = ({navigation}) => {
 
   const [visible, setVisible] = useState(false);
   const [modalDate, setModalDate] = useState(false);
+  const [modalCreator, setModalCreator] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [btnLoading, setbtnLoading] = useState(false);
 
-  const [dataKategori, setDataKategori] = useState([]);
+  const [dataJurusan, setDataJurusan] = useState([]);
+  const [dataCreator, setDataCreator] = useState([]);
 
-  const showModal = () => setVisible(true);
+  
+
+  // const showModal = () => setVisible(true);
   const showModalDate = () => setModalDate(true);
-  const hideModal = () => setVisible(false);
+  const showModalCreator = () => setModalCreator(true);
+  // const hideModal = () => setVisible(false);
   const hideModalDate = () => setModalDate(false);
+  const hideModalCreator = () => setModalCreator(false);
 
+  let id = uuid.v4();
   useEffect(() => {
     
-    loadKategori()
+    // loadJurusan()
+    loadCreator()
+    
     
   }, [])
 
-  const loadKategori = () => {
+  
+
+  const loadCreator = () => {
     firestore()
-      .collection('Kategori')
-      .orderBy('kategori', 'desc')
+      .collection('Creator')
+      .orderBy('nama', 'asc')
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {
-          setDataKategori(data => [...data, documentSnapshot.data()]);
+          setDataCreator(data => [...data, documentSnapshot.data()]);
           setIsLoading(false)
         });
       });
   }
 
 
-  const addFirestore = (url, filename) => {
-    firestore()
+  const addFirestore = async (id, url, filename) => {
+    await firestore()
         .collection('Produk')
         .doc(id)
         .set({
             id:id,
             namaProduk: namaProduk,
-            kategori: kategori,
+            jurusan: jurusan,
             tanggal: tanggal,
             creator: creator,
-            wa: wa,
+            idCreator: idCreator,
             uri: url,
             fileName: filename,
             deskripsi: deskripsi,
@@ -112,16 +123,17 @@ const addProduk = ({navigation}) => {
     let imageRef = storage().ref('Gambar/'+ id + '/' + fileName);
       imageRef
         .getDownloadURL()
-        .then(url => {
+        .then(url  => {
           // setUriImage(url)
-          addFirestore(url, fileName)
+          addFirestore(id, url, fileName)
+          console.log('Sukses')
         })
         .catch(e => console.log('getting downloadURL of image error => ', e));
   }
 
   const addProduk = async () => {
-    if(image == ""){
-      ToastAndroid.show('Masukkan gambar!', 2000);
+    if(image == "" || namaProduk == "" || jurusan == "" || tanggal == "" || creator == ""){
+      ToastAndroid.show('Lengkapi Form !', 2000);
     }
     else{
       setbtnLoading(true);
@@ -175,16 +187,32 @@ const addProduk = ({navigation}) => {
     });
   };
 
-  const renderItem = ({item}) => {
+  // const renderItem = ({item}) => {
+  //   return(
+  //     <List.Item
+  //       title={item.jurusan}
+  //       titleStyle={{fontFamily:'Poppins-Regular', color:color.textSecondary}}
+  //       onPress={() => {
+  //         hideModal();
+  //         setJurusan(item.jurusan)
+  //       }}
+  //       left={props => <List.Icon {...props} icon="tag-outline" />}
+  //     />
+  //   )
+  // }
+
+  const renderItemCreator = ({item}) => {
     return(
       <List.Item
-        title={item.kategori}
+        title={item.nama}
         titleStyle={{fontFamily:'Poppins-Regular', color:color.textSecondary}}
         onPress={() => {
-          hideModal();
-          setKategori(item.kategori)
+          hideModalCreator();
+          setCreator(item.nama)
+          setIdCreator(item.id)
+          setJurusan(item.jurusan)
         }}
-        left={props => <List.Icon {...props} icon="tag-outline" />}
+        left={props => <List.Icon {...props} icon="account-check-outline" />}
       />
     )
   }
@@ -210,13 +238,13 @@ const addProduk = ({navigation}) => {
               }}
               onChangeText={text => setNamaProduk(text)}
             />
-            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonKategori} onPress={showModal}>
-                {kategori}
+            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
+                {jurusan}
             </Button> */}
-            <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+            {/* <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
               <TextInput
-                label="Kategori"
-                value={kategori}
+                label="Jurusan"
+                value={jurusan}
                 disabled={true}
                 mode="outlined"
                 style={styles.tanggal}
@@ -227,7 +255,7 @@ const addProduk = ({navigation}) => {
               <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModal}>
                   Pilih
               </Button>
-            </View>
+            </View> */}
             <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
               <TextInput
                 label="Tanggal"
@@ -244,14 +272,29 @@ const addProduk = ({navigation}) => {
                 theme={{
                   colors: {primary: color.textLight, underlineColor: 'transparent'},
                 }}
-                onChangeText={text => setCreator(text)}
+                onChangeText={text => setTanggal(text)}
               />
               <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModalDate}>
                   Atur
               </Button>
             </View>
-            <TextInput
-              label="Kreator"
+            <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+              <TextInput
+                label="Creator"
+                value={creator}
+                disabled={true}
+                mode="outlined"
+                style={styles.tanggal}
+                theme={{
+                  colors: {primary: color.textLight, underlineColor: 'transparent'},
+                }}
+              />
+              <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModalCreator}>
+                  Pilih
+              </Button>
+            </View>
+            {/* <TextInput
+              label="Creator"
               value={creator}
               mode="outlined"
               style={styles.input}
@@ -259,8 +302,8 @@ const addProduk = ({navigation}) => {
                 colors: {primary: color.textLight, underlineColor: 'transparent'},
               }}
               onChangeText={text => setCreator(text)}
-            />
-            <TextInput
+            /> */}
+            {/* <TextInput
               label="Nomor Whatsapp"
               value={wa}
               mode="outlined"
@@ -270,7 +313,7 @@ const addProduk = ({navigation}) => {
                 colors: {primary: color.textLight, underlineColor: 'transparent'},
               }}
               onChangeText={text => setWa(text)}
-            />
+            /> */}
             <TextInput
               label="Deskripsi Produk"
               value={deskripsi}
@@ -308,16 +351,6 @@ const addProduk = ({navigation}) => {
           </List.Section>
         </View>
         <Portal>
-          <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.containerModal}>
-            <List.Subheader style={{fontFamily:'Poppins-SemiBold', color:color.textPrimary}}>Pilih Kategori</List.Subheader>
-            <FlatList 
-              data={dataKategori}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderItem}
-            />
-          </Modal>
-        </Portal>
-        <Portal>
           <Modal visible={modalDate} onDismiss={hideModalDate} contentContainerStyle={styles.containerModal}>
             <List.Subheader style={{fontFamily:'Poppins-SemiBold', color:color.textPrimary}}>Atur Tanggal</List.Subheader>
             <DatePicker
@@ -327,6 +360,16 @@ const addProduk = ({navigation}) => {
               onDateChange={date => {
                 setTanggal(date);
               }}
+            />
+          </Modal>
+        </Portal>
+        <Portal>
+          <Modal visible={modalCreator} onDismiss={hideModalCreator} contentContainerStyle={styles.containerModal}>
+            <List.Subheader style={{fontFamily:'Poppins-SemiBold', color:color.textPrimary}}>Pilih Creator</List.Subheader>
+            <FlatList 
+              data={dataCreator}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderItemCreator}
             />
           </Modal>
         </Portal>
@@ -384,7 +427,7 @@ const styles = StyleSheet.create({
     fontFamily:'Poppins-Medium',
     fontSize:font.size.font12,
   },
-  buttonKategori:{
+  buttonJurusan:{
     color:color.textSecondary,
     fontFamily:'Poppins-Medium',
     fontSize:font.size.font12,

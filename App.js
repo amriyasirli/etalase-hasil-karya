@@ -13,11 +13,16 @@ import Katalog from './src/screens/Katalog';
 import Settings from './src/screens/Settings';
 import Detail from './src/screens/Katalog/detail';
 import Produk from './src/screens/Produk';
-import Kategori from './src/screens/Kategori';
+import Jurusan from './src/screens/Jurusan';
 import addProduk from './src/screens/Produk/add';
 import updateProduk from './src/screens/Produk/update';
-import addKategori from './src/screens/Kategori/add';
-import updateKategori from './src/screens/Kategori/update';
+import addJurusan from './src/screens/Jurusan/add';
+import updateJurusan from './src/screens/Jurusan/update';
+
+
+import Creator from './src/screens/Creator';
+import addCreator from './src/screens/Creator/add';
+import updateCreator from './src/screens/Creator/update';
 // import User from './src/screens/User';
 
 const MainApp = ({navigation}) => {
@@ -124,7 +129,10 @@ export default function App() {
           <Stack.Screen name="Produk" component={Produk} options={{ 
               headerShown : false
           }} />
-          <Stack.Screen name="Kategori" component={Kategori} options={{ 
+          <Stack.Screen name="Jurusan" component={Jurusan} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="Creator" component={Creator} options={{ 
               headerShown : false
           }} />
           <Stack.Screen name="addProduk" component={addProduk} options={{ 
@@ -133,10 +141,16 @@ export default function App() {
           <Stack.Screen name="updateProduk" component={updateProduk} options={{ 
               headerShown : false
           }} />
-          <Stack.Screen name="addKategori" component={addKategori} options={{ 
+          <Stack.Screen name="addJurusan" component={addJurusan} options={{ 
               headerShown : false
           }} />
-          <Stack.Screen name="updateKategori" component={updateKategori} options={{ 
+          <Stack.Screen name="updateJurusan" component={updateJurusan} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="addCreator" component={addCreator} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="updateCreator" component={updateCreator} options={{ 
               headerShown : false
           }} />
         </Stack.Navigator>

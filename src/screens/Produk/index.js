@@ -111,7 +111,7 @@ const Produk = ({navigation}) => {
       <List.Accordion
           // key={index}
           title={item.namaProduk}
-          description={item.kategori}
+          description={item.jurusan}
           titleStyle={styles.titleList}
           onPress={openMenu}
           left={() => <List.Icon color={color.textSecondary} icon="apps-box" />}
@@ -155,6 +155,7 @@ const Produk = ({navigation}) => {
             mode="outlined"
             onPress={() => navigation.navigate('updateProduk', {
               id:item.id,
+              idCreator: item.idCreator,
             })}
             size={15}>
             Update
@@ -164,7 +165,10 @@ const Produk = ({navigation}) => {
             labelStyle={{color: color.textPrimary, fontSize: 12}}
             icon="eye"
             mode="outlined"
-            onPress={()=>navigation.navigate('Detail', {id:item.id})}
+            onPress={()=>navigation.navigate('Detail', {
+              id:item.id,
+              idCreator: item.idCreator,
+            })}
             size={15}>
             Detail
           </Button>

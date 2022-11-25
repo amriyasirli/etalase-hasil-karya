@@ -32,8 +32,8 @@ import Loading from '../../component/loading'
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const Kategori = ({navigation}) => {
-  const [kategori, setKategori] = useState([]);
+const Jurusan = ({navigation}) => {
+  const [jurusan, setJurusan] = useState([]);
   const [visible, setVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [msgNull, setMsgnull] = useState(false);
@@ -43,7 +43,7 @@ const Kategori = ({navigation}) => {
 
   const empty = arr => (arr.length = 0);
   const onRefresh = () => {
-    empty(kategori);
+    empty(jurusan);
     setIsLoading(true);
     setTimeout(() => {
       loadData();
@@ -57,18 +57,18 @@ const Kategori = ({navigation}) => {
 
   const loadData = () => {
     firestore()
-      .collection('Kategori')
-      .orderBy('kategori', 'asc')
+      .collection('Jurusan')
+      .orderBy('jurusan', 'asc')
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(documentSnapshot => {
-          setKategori(data => [...data, documentSnapshot.data()]);
+          setJurusan(data => [...data, documentSnapshot.data()]);
           setIsLoading(false);
-          console.log(kategori);
+          console.log(jurusan);
           // setFilteredDataSource(masterDataSource);
           // setLoading(false)
         });
-        if (kategori.length > 0) {
+        if (jurusan.length > 0) {
           setIsLoading(false);
           setMsgnull(false);
         } else {
@@ -80,7 +80,7 @@ const Kategori = ({navigation}) => {
 
   const hapus = id => {
     firestore()
-      .collection('Kategori')
+      .collection('Jurusan')
       .doc(id)
       .delete()
       .then(() => {
@@ -93,7 +93,7 @@ const Kategori = ({navigation}) => {
       <>
         <List.Accordion
           // key={index}
-          title={item.kategori}
+          title={item.jurusan}
           titleStyle={styles.titleList}
           onPress={openMenu}
           left={() => (
@@ -139,9 +139,9 @@ const Kategori = ({navigation}) => {
               icon="file-document-edit-outline"
               mode="outlined"
               onPress={() =>
-                navigation.navigate('updateKategori', {
+                navigation.navigate('updateJurusan', {
                   id: item.id,
-                  value: item.kategori,
+                  value: item.jurusan,
                 })
               }
               size={15}>
@@ -164,7 +164,7 @@ const Kategori = ({navigation}) => {
             color={color.textWhite}
             style={{position: 'absolute', left: 10, top: height / 20}}
           />
-          <Subheading style={styles.title}>List Kategori</Subheading>
+          <Subheading style={styles.title}>List Jurusan</Subheading>
         </View>
         {!msgNull ? (
           <View
@@ -203,8 +203,8 @@ const Kategori = ({navigation}) => {
         ) : (
           <List.Section style={{marginBottom: 20}}>
             <FlatList
-              data={kategori}
-              keyExtractor={(kategori, index) => index.toString()}
+              data={jurusan}
+              keyExtractor={(jurusan, index) => index.toString()}
               renderItem={renderItem}
               ListFooterComponent={<View style={{height: 300}}></View>}
               refreshControl={
@@ -218,13 +218,13 @@ const Kategori = ({navigation}) => {
         style={styles.fab}
         icon="plus"
         color={color.textWhite}
-        onPress={() => navigation.navigate('addKategori')}
+        onPress={() => navigation.navigate('addJurusan')}
       />
     </>
   );
 };
 
-export default Kategori;
+export default Jurusan;
 
 const styles = StyleSheet.create({
   container: {

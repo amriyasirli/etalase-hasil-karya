@@ -23,6 +23,7 @@ import font from '../../style/font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../../component/loading'
 
+
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
@@ -82,13 +83,21 @@ const Settings = ({navigation}) => {
             title="Produk"
             titleStyle={styles.titleList}
             onPress={() => navigation.navigate('Produk')}
-            left={() => <List.Icon color={color.textSecondary} icon="apps-box" />}
+            left={() => <List.Icon color={color.textSecondary} icon="apps" />}
           />
           <List.Item
-            title="Kategori"
+            title="Jurusan"
             titleStyle={styles.titleList}
-            onPress={() => navigation.navigate('Kategori')}
+            onPress={() => navigation.navigate('Jurusan')}
             left={() => <List.Icon color={color.textSecondary} icon="tag-outline" />}
+          />
+          <List.Item
+            title="Creator"
+            titleStyle={styles.titleList}
+            onPress={() => navigation.navigate('Creator')}
+            left={() => <List.Icon color={color.textSecondary} icon="account-check-outline" />}
+          />
+          <List.Item
           />
           <List.Item
             title="Logout"
