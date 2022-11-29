@@ -18,6 +18,7 @@ import addProduk from './src/screens/Produk/add';
 import updateProduk from './src/screens/Produk/update';
 import addJurusan from './src/screens/Jurusan/add';
 import updateJurusan from './src/screens/Jurusan/update';
+import FilterKatalog from './src/screens/Katalog/filterKatalog';
 
 
 import Creator from './src/screens/Creator';
@@ -56,8 +57,8 @@ const MainApp = ({navigation}) => {
                 iconName = focused
                   ? 'ios-home'
                   : 'ios-home-outline';
-              } else if (route.name === 'Katalog') {
-                iconName = focused ? 'apps' : 'apps-outline';
+              } else if (route.name === 'E-Talase') {
+                iconName = focused ? 'cart' : 'cart-outline';
               } else if (route.name === 'Saya') {
                 iconName = focused ? 'ios-person' : 'ios-person-outline';
               }
@@ -86,7 +87,8 @@ const MainApp = ({navigation}) => {
         >
           <Tab.Screen name="Home" component={Home} 
             options={{ headerShown: false,}}/>
-          <Tab.Screen name="Katalog" component={Katalog} 
+          <Tab.Screen name="E-Talase" component={Katalog} 
+            // initialParams={{ value: '' }} 
             options={{ 
               headerShown: false,
             }}/>
@@ -151,6 +153,9 @@ export default function App() {
               headerShown : false
           }} />
           <Stack.Screen name="updateCreator" component={updateCreator} options={{ 
+              headerShown : false
+          }} />
+          <Stack.Screen name="FilterKatalog" component={FilterKatalog} options={{ 
               headerShown : false
           }} />
         </Stack.Navigator>

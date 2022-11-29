@@ -41,6 +41,8 @@ const height = Dimensions.get('screen').height;
 
 const addProduk = ({navigation}) => {
   const [namaProduk, setNamaProduk] = useState("");
+  const [kode, setKode] = useState("");
+  const [harga, setHarga] = useState("");
   const [jurusan, setJurusan] = useState("");
   const [tanggal, setTanggal] = useState(new Date());
   const [creator, setCreator] = useState("");
@@ -103,6 +105,8 @@ const addProduk = ({navigation}) => {
         .set({
             id:id,
             namaProduk: namaProduk,
+            kode: kode,
+            harga: harga,
             jurusan: jurusan,
             tanggal: tanggal,
             creator: creator,
@@ -119,6 +123,25 @@ const addProduk = ({navigation}) => {
         });
   }
 
+  const loadKode = async (kode) => {
+    firestore()
+      .collection('Produk')
+      .where('kode', '==', kode)
+    //   .orderBy('tanggal', 'desc')
+      .get()
+      .then(querySnapshot => {
+        const size = querySnapshot.size;
+        if (size == 0) {
+          setbtnLoading(true);
+          uploadImage();
+        }else{
+          ToastAndroid.show('Kode Sudah digunakan !', 2000);
+        }
+
+
+      });
+  };
+
   const getlink = (fileName) => {
     let imageRef = storage().ref('Gambar/'+ id + '/' + fileName);
       imageRef
@@ -132,13 +155,11 @@ const addProduk = ({navigation}) => {
   }
 
   const addProduk = async () => {
-    if(image == "" || namaProduk == "" || jurusan == "" || tanggal == "" || creator == ""){
+    if(image == "" || namaProduk == "" || harga == "" || kode == "" ||  jurusan == "" || tanggal == "" || creator == ""){
       ToastAndroid.show('Lengkapi Form !', 2000);
     }
     else{
-      setbtnLoading(true);
-      uploadImage();
-      
+      loadKode(kode);
     }
   }
 
@@ -237,6 +258,26 @@ const addProduk = ({navigation}) => {
                 colors: {primary: color.textLight, underlineColor: 'transparent'},
               }}
               onChangeText={text => setNamaProduk(text)}
+            />
+            <TextInput
+              label="Kode Produk"
+              value={kode}
+              mode="outlined"
+              style={styles.input}
+              theme={{
+                colors: {primary: color.textLight, underlineColor: 'transparent'},
+              }}
+              onChangeText={text => setKode(text)}
+            />
+            <TextInput
+              label="Harga"
+              value={harga}
+              mode="outlined"
+              style={styles.input}
+              theme={{
+                colors: {primary: color.textLight, underlineColor: 'transparent'},
+              }}
+              onChangeText={text => setHarga(text)}
             />
             {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
                 {jurusan}

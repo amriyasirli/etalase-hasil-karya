@@ -7,6 +7,7 @@ import {
   FlatList,
   RefreshControl,
   Image,
+  Linking,
 } from 'react-native';
 import {
   IconButton,
@@ -18,6 +19,7 @@ import {
   Card,
   List,
   Avatar,
+  Button,
 } from 'react-native-paper';
 
 import Metrics from '../../style/metrics';
@@ -167,7 +169,9 @@ const Home = ({navigation}) => {
   const slide_jurusan = ({item}) => {
     return (
       <View style={{flexDirection: 'row'}}>
-        <TouchableOpacity style={styles.card2}>
+        <TouchableOpacity style={styles.card2} onPress={()=> navigation.navigate('FilterKatalog', {
+          value: item.jurusan,
+        })}>
           <IconButton color={color.primary} size={32} icon="tag-outline" />
           <Text style={styles.subtitleDark}>{item.jurusan}</Text>
         </TouchableOpacity>
@@ -192,7 +196,7 @@ const Home = ({navigation}) => {
           <View style={styles.header}>
             <IconButton icon="bell" color={color.icon} />
             <View style={{alignItems: 'center'}}>
-            <Image source={require('../../images/logo2.png')} style={styles.logo} />
+            <Image source={require('../../images/logo.png')} style={styles.logo} />
               {/* <IconButton
                 icon="account"
                 color={color.primary}
@@ -208,17 +212,26 @@ const Home = ({navigation}) => {
               </Caption> */}
             </View>
           </View>
+          <View style={{paddingHorizontal:Metrics.screenWidth * (20 / 365), marginTop:Metrics.screenWidth * (20 / 365), backgroundColor:color.light}}>
+            <Card style={{backgroundColor:color.light, elevation:0}}>
+              <Card.Cover source={require('../../images/foto-sekolah.jpeg')} />
+              <Subheading style={{fontFamily: 'Poppins-Regular',padding:5}}>Profil Sekolah SMKN 1 Ampek Angkek</Subheading>
+              <Card.Actions>
+                <Button onPress={() => Linking.openURL('https://smkn1ampekangkek.id')} color={color.primary} labelStyle={{color:color.textWhite}} mode="contained" >Kunjungi Link</Button>
+              </Card.Actions>
+            </Card>
+          </View>
           <Headline style={styles.Hello}>
             Welcome Guys, Lihatlah hasil karya dari siswa kami !{' '}
           </Headline>
           {/* <View style={{flex:1,flexDirection:'row', justifyContent:'space-between',alignItems:'center', width:Dimensions.get('window').width}}> */}
-          <Searchbar
+          {/* <Searchbar
             style={styles.searchBar}
             placeholder="Search..."
             onChangeText={text => searchFilterFunction(text)}
             value={search}
             // clearIcon={() => {}}
-          />
+          /> */}
           
         
       {!search ? (
@@ -388,7 +401,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo:{
-    width:Metrics.screenWidth * (56 / 365),
-    height:Metrics.screenHeight * (23 / 365)
+    width:Metrics.screenWidth * (50 / 365),
+    height:Metrics.screenHeight * (20 / 365)
   }
 });

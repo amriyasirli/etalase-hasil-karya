@@ -23,8 +23,8 @@ import Empty from '../../component/dataEmpty';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 
-const Katalog = ({navigation}) => {
-  // const {value} = route.params;
+const FilterKatalog = ({route, navigation}) => {
+  const {value} = route.params; // jurusan
   const [searchQuery, setSearchQuery] = useState('');
   const [produk, setProduk] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,10 +46,12 @@ const Katalog = ({navigation}) => {
 
   const loadData = async () => {
     // await setSearch(value)
+    // await searchFilterFunction(value)
     
-    await firestore()
+    firestore()
       .collection('Produk')
-      .orderBy('tanggal', 'desc')
+      .where('jurusan', '==', value)
+    //   .orderBy('tanggal', 'desc')
       .get()
       .then(querySnapshot => {
         const size = querySnapshot.size;
@@ -59,6 +61,7 @@ const Katalog = ({navigation}) => {
         }else{
           querySnapshot.forEach(documentSnapshot => {
             setProduk(data => [...data, documentSnapshot.data()]);
+            console.log(produk)
             setFilteredDataSource(produk);
             setIsLoading(false);
           });
@@ -236,7 +239,7 @@ const Katalog = ({navigation}) => {
   );
 };
 
-export default Katalog;
+export default FilterKatalog;
 
 const styles = StyleSheet.create({
   container: {

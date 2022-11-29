@@ -22,6 +22,8 @@ const detail = ({route, navigation}) => {
 
     const {id, idCreator} = route.params;
     const [namaProduk, setNamaProduk] = useState("");
+    const [kode, setKode] = useState("");
+    const [harga, setHarga] = useState("");
 
     const [produk, setProduk] = useState([]);
 
@@ -60,8 +62,8 @@ const detail = ({route, navigation}) => {
                 // setProduk(data => [...data, documentSnapshot.data()]);
                 const docData = {...documentSnapshot.data()};
                 setNamaProduk(docData.namaProduk);
-                // setjurusan(docData.jurusan);
-                // setCreator(docData.creator);
+                setKode(docData.kode);
+                setHarga(docData.harga);
                 // setWa(docData.wa);
                 // setIdCreator(docData.idCreator);
                 console.log('id Creator :'+idCreator);
@@ -282,9 +284,11 @@ const detail = ({route, navigation}) => {
                                 </Caption>
 
                             </View>
+                            <Subheading style={styles.tanggal}>Kode {kode}</Subheading>
+
                         </View>
                     </View>
-                    <Subheading style={styles.price}>{jurusan}</Subheading>
+                    <Subheading style={styles.price}>Rp. {harga}</Subheading>
                 </View>
                 <Headline style={styles.subheading}>Deskripsi:</Headline>
                 <Caption style={styles.desc}>{deskripsi}</Caption>
@@ -311,6 +315,11 @@ const detail = ({route, navigation}) => {
                         <DataTable.Cell><Text style={styles.table}>Nomor HP</Text></DataTable.Cell>
                         <DataTable.Cell>:</DataTable.Cell>
                         <DataTable.Cell><Text style={styles.table2}>+{wa}</Text></DataTable.Cell>
+                    </DataTable.Row>
+                    <DataTable.Row>
+                        <DataTable.Cell><Text style={styles.table}>Jurusan</Text></DataTable.Cell>
+                        <DataTable.Cell>:</DataTable.Cell>
+                        <DataTable.Cell><Text style={styles.table2}>{jurusan}</Text></DataTable.Cell>
                     </DataTable.Row>
 
 
@@ -340,7 +349,7 @@ const detail = ({route, navigation}) => {
         </ScrollView>
         <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginHorizontal:20, position:'absolute', bottom:0, paddingBottom:10}}>
             <IconButton icon="share-variant" color={color.primary} style={{backgroundColor:color.lightPrimary}} onPress={onShare} />
-            <Button uppercase={false} icon="whatsapp" style={{width:'85%', marginHorizontal:10}} color={color.primary} mode="contained" labelStyle={styles.button} onPress={() => Linking.openURL('https://api.whatsapp.com/send?phone='+wa+'&text=Saya%20tertarik%20pada%20produk%20'+namaProduk)}>
+            <Button uppercase={false} icon="whatsapp" style={{width:'85%', marginHorizontal:10}} color={color.primary} mode="contained" labelStyle={styles.button} onPress={() => Linking.openURL('https://api.whatsapp.com/send?phone='+wa+'&text=Saya%20tertarik%20pada%20produk%20'+namaProduk+',%20kode:'+kode)}>
                 Hubungi Admin
             </Button>
         </View>

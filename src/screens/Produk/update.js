@@ -42,6 +42,8 @@ const updateProduk = ({route, navigation}) => {
   const {id} = route.params;
 
   const [namaProduk, setNamaProduk] = useState('');
+  const [kode, setKode] = useState('');
+  const [harga, setHarga] = useState('');
   const [jurusan, setJurusan] = useState('');
   const [creator, setCreator] = useState('');
   const [idCreator, setIdCreator] = useState("");
@@ -85,6 +87,8 @@ const updateProduk = ({route, navigation}) => {
         // querySnapshot.forEach(documentSnapshot => {
           const docData = querySnapshot.data();
           setNamaProduk(docData.namaProduk);
+          setKode(docData.kode);
+          setHarga(docData.harga);
           setCreator(docData.creator);
           setDeskripsi(docData.deskripsi);
           setUri(docData.uri);
@@ -114,6 +118,8 @@ const updateProduk = ({route, navigation}) => {
       .doc(id)
       .update({
           namaProduk: namaProduk,
+          kode: kode,
+          harga: harga,
           jurusan: jurusan,
           creator: creator,
           idCreator: idCreator,
@@ -136,6 +142,8 @@ const updateProduk = ({route, navigation}) => {
       .doc(id)
       .update({
           namaProduk: namaProduk,
+          kode: kode,
+          harga: harga,
           jurusan: jurusan,
           creator: creator,
           idCreator: idCreator,
@@ -161,7 +169,7 @@ const updateProduk = ({route, navigation}) => {
   }
 
   const updateProduk = async () => {
-    if(uri == "" || namaProduk == "" || jurusan == "" || creator == ""){
+    if(uri == "" || namaProduk == "" || harga == "" || creator == ""){
       ToastAndroid.show('Masukkan gambar!', 2000);
     } if(changeImage == false) {
       setbtnLoading(true);
@@ -268,6 +276,26 @@ const updateProduk = ({route, navigation}) => {
                 colors: {primary: color.textLight, underlineColor: 'transparent'},
               }}
               onChangeText={text => setNamaProduk(text)}
+            />
+            <TextInput
+              label="Kode Produk"
+              value={kode}
+              mode="outlined"
+              disabled={true}
+              style={styles.input}
+              theme={{
+                colors: {primary: color.textLight, underlineColor: 'transparent'},
+              }}
+            />
+            <TextInput
+              label="Harga"
+              value={harga}
+              mode="outlined"
+              style={styles.input}
+              theme={{
+                colors: {primary: color.textLight, underlineColor: 'transparent'},
+              }}
+              onChangeText={text => setHarga(text)}
             />
             {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
                 {jurusan}
