@@ -32,7 +32,7 @@ import firestore from '@react-native-firebase/firestore';
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const updateJurusan = ({route, navigation}) => {
+const UpdateJurusan = ({route, navigation}) => {
     const {id, value} = route.params;
     const [jurusan, setJurusan] = useState(value);
 
@@ -71,8 +71,8 @@ const updateJurusan = ({route, navigation}) => {
       <ScrollView>
         <View>
           <View style={styles.container}>
-            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} color={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
-            <Subheading style={styles.title}>Tambah Jurusan</Subheading>
+            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} iconColor={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
+            <Subheading style={styles.title}>Update Jurusan</Subheading>
           </View>
           <List.Section>
             <TextInput
@@ -85,7 +85,7 @@ const updateJurusan = ({route, navigation}) => {
               }}
               onChangeText={text => setJurusan(text)}
             />
-            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
+            {/* <Button uppercase={false} buttonColor={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
                 {jurusan}
             </Button> */}
             
@@ -93,7 +93,7 @@ const updateJurusan = ({route, navigation}) => {
         </View>
     </ScrollView>
     <View style={{width:width, padding:20}} >
-      <Button uppercase={false} color={color.primary} mode="contained" labelStyle={styles.button} onPress={() => update()}>
+      <Button uppercase={false} buttonColor={color.primary} mode="contained" labelStyle={styles.button} onPress={() => update()}>
           Simpan
       </Button>
     </View>
@@ -101,7 +101,7 @@ const updateJurusan = ({route, navigation}) => {
   );
 };
 
-export default updateJurusan;
+export default UpdateJurusan;
 
 const styles = StyleSheet.create({
   container: {

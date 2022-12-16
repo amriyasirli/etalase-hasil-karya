@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -25,7 +25,6 @@ import {
 import Metrics from '../../style/metrics';
 import color from '../../style/colors';
 import font from '../../style/font';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import firestore from '@react-native-firebase/firestore';
 import Loading from '../../component/loading';
 import storage from '@react-native-firebase/storage';
@@ -40,7 +39,7 @@ const Home = ({navigation}) => {
   const [filteredDataSource, setFilteredDataSource] = useState([]);
 
   const onChangeSearch = query => setSearchQuery(query);
-  const carousel = useRef();
+  // const carousel = useRef();
   const [activeSlide, setActiveSlide] = useState(0);
 
   const onRefresh = () => {
@@ -115,7 +114,7 @@ const Home = ({navigation}) => {
         <IconButton
           onPress={() => {}}
           icon="heart-outline"
-          color={color.primary}
+          buttonColor={color.primary}
           style={styles.iconHeart}
         />
         <Caption style={styles.produkName}>{item.namaProduk}</Caption>
@@ -124,7 +123,7 @@ const Home = ({navigation}) => {
           <IconButton
             icon="chevron-right"
             size={20}
-            color={color.primary}
+            buttonColor={color.primary}
             style={{backgroundColor: color.lightPrimary}}
             onPress={() => navigation.navigate('Detail', {
               id: item.id,
@@ -172,7 +171,7 @@ const Home = ({navigation}) => {
         <TouchableOpacity style={styles.card2} onPress={()=> navigation.navigate('FilterKatalog', {
           value: item.jurusan,
         })}>
-          <IconButton color={color.primary} size={32} icon="tag-outline" />
+          <IconButton buttonColor={color.primary} size={32} icon="tag-outline" />
           <Text style={styles.subtitleDark}>{item.jurusan}</Text>
         </TouchableOpacity>
       </View>
@@ -199,7 +198,7 @@ const Home = ({navigation}) => {
             <Image source={require('../../images/logo.png')} style={styles.logo} />
               {/* <IconButton
                 icon="account"
-                color={color.primary}
+                buttonColor={color.primary}
                 onPress={() => navigation.navigate('Login')}
               />
               <Caption
@@ -217,7 +216,7 @@ const Home = ({navigation}) => {
               <Card.Cover source={require('../../images/foto-sekolah.jpeg')} />
               <Subheading style={{fontFamily: 'Poppins-Regular',padding:5}}>Profil Sekolah SMKN 1 Ampek Angkek</Subheading>
               <Card.Actions>
-                <Button onPress={() => Linking.openURL('https://smkn1ampekangkek.id')} color={color.primary} labelStyle={{color:color.textWhite}} mode="contained" >Kunjungi Link</Button>
+                <Button onPress={() => Linking.openURL('https://smkn1ampekangkek.id')} buttonColor={color.primary} labelStyle={{color:color.textWhite}} mode="contained" >Kunjungi Link</Button>
               </Card.Actions>
             </Card>
           </View>
@@ -237,36 +236,7 @@ const Home = ({navigation}) => {
       {!search ? (
         <>
         <Subheading style={styles.rekomended}>Jurusan</Subheading>
-        <Carousel
-          // ref={carousel}
-          data={jurusan}
-          renderItem={slide_jurusan}
-          sliderWidth={Metrics.screenWidth}
-          itemWidth={Metrics.screenWidth / 2 - 30}
-          activeSlideAlignment="start"
-          containerCustomStyle={styles.sliderContentContainer}
-        />
         <Subheading style={styles.rekomended}>Produk terbaru !</Subheading>
-        <Carousel
-          //   ref={(c) => { dataEntry = c; }}
-          data={produk}
-          keyExtractor={(produk, index) => index.toString()}
-          numColumns={2}
-          // snapToEnd={3}
-          maxToRenderPerBatch={3}
-          renderItem={renderItem}
-          refreshControl={
-            <RefreshControl
-              refreshing={isLoading}
-              onRefresh={() => onRefresh()}
-            />
-          }
-          sliderWidth={Metrics.screenWidth}
-          itemWidth={Metrics.screenWidth / 2 - 30}
-          activeSlideAlignment={'start'}
-          //   hasParallaxImages={true}
-          containerCustomStyle={styles.sliderContentContainer}
-        />
         </>
       ) : (
         <List.Section title="Hasil pencarian !">

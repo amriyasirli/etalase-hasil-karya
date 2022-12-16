@@ -25,7 +25,6 @@ import {
 import Metrics from '../../style/metrics';
 import color from '../../style/colors';
 import font from '../../style/font';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import DatePicker from 'react-native-date-picker';
 import dataEntry from '../../service/dataEntri'
 import firestore from '@react-native-firebase/firestore';
@@ -38,10 +37,11 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const updateProduk = ({route, navigation}) => {
+const UpdateProduk = ({route, navigation}) => {
   const {id} = route.params;
 
   const [namaProduk, setNamaProduk] = useState('');
+  const [oldKode, setOldKode] = useState('');
   const [kode, setKode] = useState('');
   const [harga, setHarga] = useState('');
   const [jurusan, setJurusan] = useState('');
@@ -87,7 +87,7 @@ const updateProduk = ({route, navigation}) => {
         // querySnapshot.forEach(documentSnapshot => {
           const docData = querySnapshot.data();
           setNamaProduk(docData.namaProduk);
-          setKode(docData.kode);
+          setOldKode(docData.kode);
           setHarga(docData.harga);
           setCreator(docData.creator);
           setDeskripsi(docData.deskripsi);
@@ -118,7 +118,7 @@ const updateProduk = ({route, navigation}) => {
       .doc(id)
       .update({
           namaProduk: namaProduk,
-          kode: kode,
+          kode: oldKode ? oldKode : kode,
           harga: harga,
           jurusan: jurusan,
           creator: creator,
@@ -142,7 +142,7 @@ const updateProduk = ({route, navigation}) => {
       .doc(id)
       .update({
           namaProduk: namaProduk,
-          kode: kode,
+          kode: oldKode ? oldKode : kode,
           harga: harga,
           jurusan: jurusan,
           creator: creator,
@@ -170,16 +170,65 @@ const updateProduk = ({route, navigation}) => {
 
   const updateProduk = async () => {
     if(uri == "" || namaProduk == "" || harga == "" || creator == ""){
-      ToastAndroid.show('Masukkan gambar!', 2000);
-    } if(changeImage == false) {
-      setbtnLoading(true);
-      addWithoutImage();
-    } else{
-      setbtnLoading(true);
-      uploadImage();
+      ToastAndroid.show('Lengkapi Form!', 2000);
+    }else{
+      if(changeImage == false) {
+        if(oldKode){
+          setbtnLoading(true);
+          addWithoutImage();
+        }else{
+          loadKodeWithoutImage(kode);
+        }
+      } else{
+          if(oldKode){
+            setbtnLoading(true);
+            uploadImage();
+          }else{
+            loadKodeImage(kode);
+          }
+        
+      }
+    } 
       
-    }
   }
+
+  const loadKodeImage = async (kode) => {
+    firestore()
+      .collection('Produk')
+      .where('kode', '==', kode)
+    //   .orderBy('tanggal', 'desc')
+      .get()
+      .then(querySnapshot => {
+        const size = querySnapshot.size;
+        if (size == 0) {
+          setbtnLoading(true);
+          uploadImage();
+        }else{
+          ToastAndroid.show('Kode Sudah digunakan !', 2000);
+        }
+
+
+      });
+  };
+
+  const loadKodeWithoutImage = async (kode) => {
+    firestore()
+      .collection('Produk')
+      .where('kode', '==', kode)
+    //   .orderBy('tanggal', 'desc')
+      .get()
+      .then(querySnapshot => {
+        const size = querySnapshot.size;
+        if (size == 0) {
+          setbtnLoading(true);
+          addWithoutImage();
+        }else{
+          ToastAndroid.show('Kode Sudah digunakan !', 2000);
+        }
+
+
+      });
+  };
   
   const hapus = () => {
     let imageRef = storage().ref('Gambar/' + id + '/' + fileName);
@@ -255,6 +304,7 @@ const updateProduk = ({route, navigation}) => {
       }
     });
   };
+  // console.log(kode)
 
   if(isLoading) return <Loading />
   
@@ -263,7 +313,7 @@ const updateProduk = ({route, navigation}) => {
       <ScrollView>
         <View>
           <View style={styles.container}>
-            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} color={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
+            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} iconColor={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
             <Subheading style={styles.title}>Update Produk</Subheading>
           </View>
           <List.Section>
@@ -279,13 +329,14 @@ const updateProduk = ({route, navigation}) => {
             />
             <TextInput
               label="Kode Produk"
-              value={kode}
+              value={oldKode}
               mode="outlined"
-              disabled={true}
+              disabled={!oldKode ? false : true}
               style={styles.input}
               theme={{
                 colors: {primary: color.textLight, underlineColor: 'transparent'},
               }}
+              onChangeText={text => setKode(text)}
             />
             <TextInput
               label="Harga"
@@ -297,7 +348,7 @@ const updateProduk = ({route, navigation}) => {
               }}
               onChangeText={text => setHarga(text)}
             />
-            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
+            {/* <Button uppercase={false} buttonColor={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
                 {jurusan}
             </Button> */}
             {/* <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
@@ -355,7 +406,7 @@ const updateProduk = ({route, navigation}) => {
                   icon="image-plus"
                   size={38}
                   onPress={()=> openGallery()}
-                  color={color.primary}
+                  iconColor={color.primary}
                   style={{backgroundColor:color.lightPrimary}}
                 />
                 <Subheading>Upload Gambar</Subheading>
@@ -370,7 +421,7 @@ const updateProduk = ({route, navigation}) => {
                 />
                 <IconButton
                   icon="refresh"
-                  color={color.primary}
+                  iconColor={color.primary}
                   onPress={()=>openGallery()}
                   style={{position:'absolute', top:0, right:0, backgroundColor:color.lightPrimary}}
                 />
@@ -404,7 +455,7 @@ const updateProduk = ({route, navigation}) => {
         </Portal> */}
     </ScrollView>
     <View style={{width:width, padding:20}} >
-      <Button uppercase={false} color={color.primary} disabled={btnLoading} mode="contained" labelStyle={styles.button} onPress={() => updateProduk()}>
+      <Button uppercase={false} buttonColor={color.primary} disabled={btnLoading} mode="contained" labelStyle={styles.button} onPress={() => updateProduk()}>
           Simpan Perubahan
       </Button>
     </View>
@@ -412,7 +463,7 @@ const updateProduk = ({route, navigation}) => {
   );
 };
 
-export default updateProduk;
+export default UpdateProduk;
 
 const styles = StyleSheet.create({
   container: {

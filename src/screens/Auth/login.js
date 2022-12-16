@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const login = ({navigation}) => {
+const Login = ({navigation}) => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
@@ -111,7 +111,7 @@ const login = ({navigation}) => {
                             labelStyle={{color:color.light, paddingVertical:5, fontFamily:'Poppins-SemiBold'}} 
                             style={{borderRadius:10, marginTop:30}}
                             onPress={()=>authProses(username, password)}
-                            color={color.primary}>
+                            buttonColor={color.primary}>
                         Login
                         </Button>
                     )}
@@ -121,7 +121,7 @@ const login = ({navigation}) => {
     )
 }
 
-export default login
+export default Login
 
 const styles = StyleSheet.create({
     container:{

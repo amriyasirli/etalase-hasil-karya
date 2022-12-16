@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { StyleSheet, Share, TouchableOpacity, View, ScrollView, Linking, ToastAndroid, PermissionsAndroid } from 'react-native'
 import {Avatar, Card, Headline, IconButton, Subheading, Button, Caption, Text, DataTable} from 'react-native-paper'
-import RNFetchBlob from 'rn-fetch-blob-v2'
+// import RNFetchBlob from 'rn-fetch-blob-v2'
 
 import color from '../../style/colors'
 import Metrics from '../../style/metrics'
@@ -12,13 +12,15 @@ import storage from '@react-native-firebase/storage';
 import ImageView from "react-native-image-viewing";
 import bulan from '../../component/bulan'
 
-import Carousel, {Pagination} from 'react-native-snap-carousel';
+import Carousel from 'react-native-snap-carousel';
+
+
 
 
 const width = Metrics.screenWidth; 
 const height = Metrics.screenHeight; 
 
-const detail = ({route, navigation}) => {
+const Detail = ({route, navigation}) => {
 
     const {id, idCreator} = route.params;
     const [namaProduk, setNamaProduk] = useState("");
@@ -157,49 +159,49 @@ const detail = ({route, navigation}) => {
         }
       };
      
-      const downloadImage = () => {
-        // Main function to download the image
+      // const downloadImage = () => {
+      //   // Main function to download the image
         
-        // To add the time suffix in filename
-        let date = new Date();
-        // Image URL which we want to download
-        let image_URL = uri;    
-        // Getting the extention of the file
-        let ext = getExtention(image_URL);
-        ext = '.' + ext[0];
-        // Get config and fs from RNFetchBlob
-        // config: To pass the downloading related options
-        // fs: Directory path where we want our image to download
-        const { config, fs } = RNFetchBlob;
-        let PictureDir = fs.dirs.PictureDir;
-        let options = {
-          fileCache: true,
-          addAndroidDownloads: {
-            // Related to the Android only
-            useDownloadManager: true,
-            notification: true,
-            path:
-              PictureDir +
-              '/image_' + 
-              Math.floor(date.getTime() + date.getSeconds() / 2) +
-              ext,
-            description: 'Image',
-          },
-        };
-        config(options)
-          .fetch('GET', image_URL)
-          .then(res => {
-            // Showing alert after successful downloading
-            console.log('res -> ', JSON.stringify(res));
-            alert('Image Downloaded Successfully.');
-          });
-      };
+      //   // To add the time suffix in filename
+      //   let date = new Date();
+      //   // Image URL which we want to download
+      //   let image_URL = uri;    
+      //   // Getting the extention of the file
+      //   let ext = getExtention(image_URL);
+      //   ext = '.' + ext[0];
+      //   // Get config and fs from RNFetchBlob
+      //   // config: To pass the downloading related options
+      //   // fs: Directory path where we want our image to download
+      //   const { config, fs } = RNFetchBlob;
+      //   let PictureDir = fs.dirs.PictureDir;
+      //   let options = {
+      //     fileCache: true,
+      //     addAndroidDownloads: {
+      //       // Related to the Android only
+      //       useDownloadManager: true,
+      //       notification: true,
+      //       path:
+      //         PictureDir +
+      //         '/image_' + 
+      //         Math.floor(date.getTime() + date.getSeconds() / 2) +
+      //         ext,
+      //       description: 'Image',
+      //     },
+      //   };
+      //   config(options)
+      //     .fetch('GET', image_URL)
+      //     .then(res => {
+      //       // Showing alert after successful downloading
+      //       console.log('res -> ', JSON.stringify(res));
+      //       alert('Image Downloaded Successfully.');
+      //     });
+      // };
      
-      const getExtention = filename => {
-        // To get the file extension
-        return /[.]/.exec(filename) ?
-                 /[^.]+$/.exec(filename) : undefined;
-      };
+      // const getExtention = filename => {
+      //   // To get the file extension
+      //   return /[.]/.exec(filename) ?
+      //            /[^.]+$/.exec(filename) : undefined;
+      // };
 
 
       const renderItem = ({item, index}) => {
@@ -210,7 +212,7 @@ const detail = ({route, navigation}) => {
             <IconButton
               onPress={() => {}}
               icon="heart-outline"
-              color={color.primary}
+              buttonColor={color.primary}
               style={styles.iconHeart}
             />
             <Caption style={styles.produkName}>{item.namaProduk}</Caption>
@@ -219,7 +221,7 @@ const detail = ({route, navigation}) => {
               <IconButton
                 icon="chevron-right"
                 size={20}
-                color={color.primary}
+                buttonColor={color.primary}
                 style={{backgroundColor: color.lightPrimary}}
                 onPress={() => navigation.navigate('Detail', {
                   id: item.id,
@@ -261,17 +263,18 @@ const detail = ({route, navigation}) => {
         <>
         <ScrollView style={{backgroundColor:'#FFF'}}>
             <View style={styles.containerHeader}>
-                <IconButton icon="arrow-left" size={32} color={color.textWhite} style={{position:'absolute', left:10, top:60}} onPress={()=>navigation.goBack()} />
+                <IconButton icon="arrow-left" size={32} iconColor={color.textWhite} style={{position:'absolute', left:10, top:60}} onPress={()=>navigation.goBack()} />
                 <TouchableOpacity onPress={() => setIsVisible(true)} >
                     <Avatar.Image size={280} style={styles.produk} source={{uri:uri}} />
                 </TouchableOpacity>
-                <IconButton icon="cloud-download-outline" size={32} color={color.textWhite} style={{position:'absolute', right:10, top:60}} onPress={()=>checkPermission()} />
+                <IconButton icon="cloud-download-outline" size={32} iconColor={color.textWhite} style={{position:'absolute', right:10, top:60}} />
             </View>
             <View style={styles.containerBody}>
-                <Headline style={styles.produkName}>{namaProduk}</Headline>
+                {/* <Headline style={styles.produkName}>{namaProduk}</Headline> */}
+                <Text variant="headlineLarge" style={styles.produkName}>{namaProduk}</Text>
                 <View style={styles.row}>
                     <View style={styles.quantity}>
-                        <IconButton icon="account" size={18} color={color.secondary} style={{backgroundColor:color.lightPrimary}} />
+                        <IconButton icon="account" size={18} iconColor={color.secondary} style={{backgroundColor:color.lightPrimary}} />
                         <View style={styles.containerCreator}>
                             <Subheading style={styles.nama}>{nama}</Subheading>
                             <View>
@@ -344,12 +347,12 @@ const detail = ({route, navigation}) => {
                     activeSlideAlignment={'start'}
                     //   hasParallaxImages={true}
                     containerCustomStyle={styles.sliderContentContainer}
-                    />
+                  />
             </View>
         </ScrollView>
         <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginHorizontal:20, position:'absolute', bottom:0, paddingBottom:10}}>
-            <IconButton icon="share-variant" color={color.primary} style={{backgroundColor:color.lightPrimary}} onPress={onShare} />
-            <Button uppercase={false} icon="whatsapp" style={{width:'85%', marginHorizontal:10}} color={color.primary} mode="contained" labelStyle={styles.button} onPress={() => Linking.openURL('https://api.whatsapp.com/send?phone='+wa+'&text=Saya%20tertarik%20pada%20produk%20'+namaProduk+',%20kode:'+kode)}>
+            <IconButton icon="share-variant" buttonColor={color.primary} style={{backgroundColor:color.lightPrimary}} onPress={onShare} />
+            <Button uppercase={false} icon="whatsapp" style={{width:'85%', marginHorizontal:10}} buttonColor={color.primary} mode="contained" labelStyle={styles.button} onPress={() => Linking.openURL('https://api.whatsapp.com/send?phone='+wa+'&text=Saya%20tertarik%20pada%20produk%20'+namaProduk+',%20kode:'+kode)}>
                 Hubungi Admin
             </Button>
         </View>
@@ -364,7 +367,7 @@ const detail = ({route, navigation}) => {
     )
 }
 
-export default detail
+export default Detail
 
 const styles = StyleSheet.create({
     containerHeader:{
@@ -385,11 +388,10 @@ const styles = StyleSheet.create({
         marginBottom:56,
         // height:Metrics.screenHeight/2+30
     },
-    produkName:{
-        fontFamily:'Poppins-Medium',
-        color:color.textPrimary,
-        marginBottom:30
-    },
+    // produkName:{
+    //     fontFamily:'Poppins-Medium',
+    //     marginBottom:30
+    // },
     row: {
         flexDirection:'row', 
         justifyContent:'space-between', 
@@ -457,8 +459,8 @@ const styles = StyleSheet.create({
         width: Metrics.screenWidth / 3 - 30,
         // height:Metrics.screenHeight/4,
         margin: 10,
-        backgroundColor: 'transparant',
-        // elevation:0,
+        // backgroundColor: 'transparant',
+        elevation:0,
         // borderColor:color.primary,
         // borderWidth:0.2,
         borderRadius: 12,
@@ -473,7 +475,7 @@ const styles = StyleSheet.create({
         marginTop: 8,
         paddingHorizontal: 8,
         fontFamily: 'Poppins-Medium',
-        color: color.textPrimary,
+        color: color.primary,
       },
       price: {
         color: color.primary,

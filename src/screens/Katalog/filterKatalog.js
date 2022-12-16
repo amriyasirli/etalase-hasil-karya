@@ -133,7 +133,7 @@ const FilterKatalog = ({route, navigation}) => {
         <IconButton
           onPress={() => {}}
           icon="heart-outline"
-          color={color.primary}
+          iconColor={color.primary}
           style={styles.iconHeart}
         />
         <Caption style={styles.produkName}>{item.namaProduk}</Caption>
@@ -142,7 +142,7 @@ const FilterKatalog = ({route, navigation}) => {
           <IconButton
             icon="chevron-right"
             size={20}
-            color={color.primary}
+            iconColor={color.primary}
             style={{backgroundColor: color.lightPrimary}}
             onPress={() => navigation.navigate('Detail', {
               id: item.id,
@@ -189,7 +189,7 @@ const FilterKatalog = ({route, navigation}) => {
               justifyContent: 'center',
             }}
             size={28}
-            color="white"
+            iconColor="white"
             icon="refresh"
             onPress={onRefresh}
           />
@@ -254,8 +254,8 @@ const styles = StyleSheet.create({
     width: Metrics.screenWidth / 2 - 30,
     // height:Metrics.screenHeight/4,
     margin: 10,
-    backgroundColor: 'transparant',
-    // elevation:0,
+    // backgroundColor: 'transparant',
+    elevation:2,
     // borderColor:color.primary,
     // borderWidth:0.2,
     borderRadius: 8,

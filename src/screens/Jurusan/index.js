@@ -24,7 +24,6 @@ import {
 import Metrics from '../../style/metrics';
 import color from '../../style/colors';
 import font from '../../style/font';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import dataEntry from '../../service/dataEntri';
 import firestore from '@react-native-firebase/firestore';
 import Loading from '../../component/loading'
@@ -161,7 +160,7 @@ const Jurusan = ({navigation}) => {
           <IconButton
             icon="arrow-left"
             onPress={() => navigation.goBack()}
-            color={color.textWhite}
+            iconColor={color.textWhite}
             style={{position: 'absolute', left: 10, top: height / 20}}
           />
           <Subheading style={styles.title}>List Jurusan</Subheading>
@@ -193,7 +192,7 @@ const Jurusan = ({navigation}) => {
                 justifyContent: 'center',
               }}
               size={28}
-              color="white"
+              iconColor="white"
               icon="refresh"
               onPress={() => {
                 onRefresh();

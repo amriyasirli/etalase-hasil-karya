@@ -1,4 +1,4 @@
-const colors = {
+const Colors = {
     primary : '#FFA451',
     darkPrimary : '#F08626',
     lightPrimary : '#FFF7F0',
@@ -15,4 +15,4 @@ const colors = {
     icon : '#070648',
 }
 
-export default colors;
+export default Colors;

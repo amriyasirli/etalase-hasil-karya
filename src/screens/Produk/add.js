@@ -26,7 +26,6 @@ import {
 import Metrics from '../../style/metrics';
 import color from '../../style/colors';
 import font from '../../style/font';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import DatePicker from 'react-native-date-picker';
 import dataEntry from '../../service/dataEntri'
 import firestore from '@react-native-firebase/firestore';
@@ -39,7 +38,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const addProduk = ({navigation}) => {
+const AddProduk = ({navigation}) => {
   const [namaProduk, setNamaProduk] = useState("");
   const [kode, setKode] = useState("");
   const [harga, setHarga] = useState("");
@@ -245,7 +244,7 @@ const addProduk = ({navigation}) => {
       <ScrollView>
         <View>
           <View style={styles.container}>
-            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} color={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
+            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} iconColor={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
             <Subheading style={styles.title}>Tambah Produk</Subheading>
           </View>
           <List.Section>
@@ -279,7 +278,7 @@ const addProduk = ({navigation}) => {
               }}
               onChangeText={text => setHarga(text)}
             />
-            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
+            {/* <Button uppercase={false} buttonColor={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonJurusan} onPress={showModal}>
                 {jurusan}
             </Button> */}
             {/* <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
@@ -293,7 +292,7 @@ const addProduk = ({navigation}) => {
                   colors: {primary: color.textLight, underlineColor: 'transparent'},
                 }}
               />
-              <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModal}>
+              <Button uppercase={false} buttonColor={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModal}>
                   Pilih
               </Button>
             </View> */}
@@ -315,7 +314,7 @@ const addProduk = ({navigation}) => {
                 }}
                 onChangeText={text => setTanggal(text)}
               />
-              <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModalDate}>
+              <Button uppercase={false} buttonColor={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModalDate}>
                   Atur
               </Button>
             </View>
@@ -330,7 +329,7 @@ const addProduk = ({navigation}) => {
                   colors: {primary: color.textLight, underlineColor: 'transparent'},
                 }}
               />
-              <Button uppercase={false} color={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModalCreator}>
+              <Button uppercase={false} buttonColor={color.textPrimary} mode="contained" style={{marginHorizontal:20}} labelStyle={styles.btnTanggal} onPress={showModalCreator}>
                   Pilih
               </Button>
             </View>
@@ -373,7 +372,7 @@ const addProduk = ({navigation}) => {
                   icon="image-plus"
                   size={38}
                   onPress={()=> openGallery()}
-                  color={color.primary}
+                  iconColor={color.primary}
                   style={{backgroundColor:color.lightPrimary}}
                 />
                 <Subheading>Upload Gambar</Subheading>
@@ -416,7 +415,7 @@ const addProduk = ({navigation}) => {
         </Portal>
     </ScrollView>
     <View style={{width:width, padding:20}} >
-      <Button uppercase={false} color={color.primary} mode="contained" labelStyle={styles.button} disabled={btnLoading} onPress={() => addProduk()}>
+      <Button uppercase={false} buttonColor={color.primary} mode="contained" labelStyle={styles.button} disabled={btnLoading} onPress={() => addProduk()}>
           Simpan
       </Button>
     </View>
@@ -424,7 +423,7 @@ const addProduk = ({navigation}) => {
   );
 };
 
-export default addProduk;
+export default AddProduk;
 
 const styles = StyleSheet.create({
   container: {

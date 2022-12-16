@@ -69,8 +69,7 @@ const Splash = ({navigation}) => {
         <StatusBar
           barStyle="dark-content"
           animated={true}
-          backgroundColor="#4DD4B2"
-          translucent
+          // backgroundColor="#4DD4B2"
           backgroundColor="transparent"
         />
         {/* <View style={styles.background}> */}

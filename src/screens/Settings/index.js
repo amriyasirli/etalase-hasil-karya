@@ -72,7 +72,7 @@ const Settings = ({navigation}) => {
         <View style={styles.containerAuth}>
         <Image source={require('../../images/logo2.png')} style={styles.logo} />
 
-          <Button onPress={()=>navigation.replace('Login')} icon="account" mode="contained" color={color.textPrimary} >
+          <Button onPress={()=>navigation.replace('Login')} icon="account" mode="contained" buttonColor={color.textPrimary} >
               Login
           </Button>
         </View>

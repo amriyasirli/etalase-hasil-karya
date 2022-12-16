@@ -34,7 +34,7 @@ import Loading from '../../component/loading'
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const updateCreator = ({route, navigation}) => {
+const UpdateCreator = ({route, navigation}) => {
     const {
             id, 
             // nama,
@@ -146,7 +146,7 @@ const updateCreator = ({route, navigation}) => {
       <ScrollView>
         <View>
           <View style={styles.container}>
-            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} color={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
+            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} iconColor={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
             <Subheading style={styles.title}>Update Creator</Subheading>
           </View>
           <List.Section>
@@ -205,7 +205,7 @@ const updateCreator = ({route, navigation}) => {
                 />
               </Modal>
             </Portal>
-            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonCreator} onPress={showModal}>
+            {/* <Button uppercase={false} buttonColor={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonCreator} onPress={showModal}>
                 {creator}
             </Button> */}
             
@@ -213,7 +213,7 @@ const updateCreator = ({route, navigation}) => {
         </View>
     </ScrollView>
     <View style={{width:width, padding:20}} >
-      <Button uppercase={false} color={color.primary} mode="contained" labelStyle={styles.button} onPress={() => update()}>
+      <Button uppercase={false} buttonColor={color.primary} mode="contained" labelStyle={styles.button} onPress={() => update()}>
           Simpan
       </Button>
     </View>
@@ -221,7 +221,7 @@ const updateCreator = ({route, navigation}) => {
   );
 };
 
-export default updateCreator;
+export default UpdateCreator;
 
 const styles = StyleSheet.create({
   container: {

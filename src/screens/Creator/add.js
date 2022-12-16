@@ -36,7 +36,7 @@ import Loading from '../../component/loading'
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-const addCreator = ({navigation}) => {
+const AddCreator = ({navigation}) => {
   const [nama, setNama] = useState("");
   const [alamat, setAlamat] = useState("");
   const [wa, setWa] = useState("+62");
@@ -123,7 +123,7 @@ const addCreator = ({navigation}) => {
       <ScrollView>
         <View>
           <View style={styles.container}>
-            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} color={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
+            <IconButton icon="arrow-left" onPress={()=>navigation.goBack()} iconColor={color.textWhite} style={{position:'absolute', left:10, top:height/20}} />
             <Subheading style={styles.title}>Tambah Creator</Subheading>
           </View>
           <List.Section>
@@ -192,7 +192,7 @@ const addCreator = ({navigation}) => {
               }}
               onChangeText={text => setJurusan(text)}
             /> */}
-            {/* <Button uppercase={false} color={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonCreator} onPress={showModal}>
+            {/* <Button uppercase={false} buttonColor={color.primary} mode="outlined" style={{marginHorizontal:20}} labelStyle={styles.buttonCreator} onPress={showModal}>
                 {creator}
             </Button> */}
             
@@ -200,7 +200,7 @@ const addCreator = ({navigation}) => {
         </View>
     </ScrollView>
     <View style={{width:width, padding:20}} >
-      <Button uppercase={false} color={color.primary} mode="contained" disabled={btnLoading} labelStyle={styles.button} onPress={() => addCreator()}>
+      <Button uppercase={false} buttonColor={color.primary} mode="contained" disabled={btnLoading} labelStyle={styles.button} onPress={() => addCreator()}>
           Simpan
       </Button>
     </View>
@@ -208,7 +208,7 @@ const addCreator = ({navigation}) => {
   );
 };
 
-export default addCreator;
+export default AddCreator;
 
 const styles = StyleSheet.create({
   container: {
